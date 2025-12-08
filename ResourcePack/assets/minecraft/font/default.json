@@ -1,0 +1,98 @@
+{
+  "providers": [
+    {
+      "type": "space",
+      "ascent": 8,
+      "advances": {
+        "\uF801": -100,
+        "\uF802": -10,
+        "\uF803": -1,
+        "\uF804": -91
+      }
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_frame.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE000"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_0.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE010"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_10.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE011"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_20.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE012"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_30.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE013"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_40.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE014"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_50.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE015"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_60.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE016"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_70.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE017"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_80.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE018"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_90.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE019"]
+    },
+    {
+      "type": "bitmap",
+      "file": "custom_ui/hp_bar/hp_fill_100.png",
+      "ascent": 8,
+      "height": 16,
+      "chars": ["\uE01A"]
+    }
+  ]
+}

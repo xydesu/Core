@@ -1,0 +1,20 @@
+name: Core
+version: '1.0'
+main: me.xydesu.core.Core
+api-version: '1.21'
+depend: [LibsDisguises]
+commands:
+  item:
+    usage: /<command> <item>
+  iteminfo:
+    usage: /<command>
+  stats:
+    usage: /<command> <attribute> <value> [player]
+  menu:
+    usage: /<command>
+  ap:
+    usage: /<command> give <player> <amount>
+  spawnmob:
+    usage: /<command>
+  loop:
+    usage: /<command> <times> <delay> <command>
