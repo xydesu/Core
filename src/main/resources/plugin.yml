@@ -18,3 +18,5 @@ commands:
     usage: /<command>
   loop:
     usage: /<command> <times> <delay> <command>
+  displaytest:
+    usage: /<command>

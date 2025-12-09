@@ -6,7 +6,10 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -121,37 +124,9 @@ public class PlayerHudTask extends BukkitRunnable implements Listener {
         );
         playerBars.put(player.getUniqueId(), bar);
         player.showBossBar(bar);
-    }
 
-    // ================= 事件監聽部分 =================
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        createBar(event.getPlayer());
-    }
 
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-        // 玩家離開時，從 Map 中移除並隱藏 BossBar
-        BossBar bar = playerBars.remove(player.getUniqueId());
-        lastContent.remove(player.getUniqueId());
-        if (bar != null) {
-            // 雖然玩家離開了，但對於某些客戶端或 BungeeCord 環境，顯式隱藏是個好習慣
-            player.hideBossBar(bar);
-        }
-    }
 
-    // 添加一個方法用於在插件卸載時清理所有人的 BossBar
-    public void stopAndCleanup() {
-        for (Map.Entry<UUID, BossBar> entry : playerBars.entrySet()) {
-            Player p = Bukkit.getPlayer(entry.getKey());
-            if (p != null) {
-                p.hideBossBar(entry.getValue());
-            }
-        }
-        playerBars.clear();
-        lastContent.clear();
-        this.cancel();
     }
 }

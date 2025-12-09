@@ -1,12 +1,6 @@
 package me.xydesu.core;
 
-import me.xydesu.core.Command.Commands.item;
-import me.xydesu.core.Command.Commands.iteminfo;
-import me.xydesu.core.Command.Commands.loop;
-import me.xydesu.core.Command.Commands.menu;
-import me.xydesu.core.Command.Commands.stats;
-import me.xydesu.core.Command.Commands.ap;
-import me.xydesu.core.Command.Commands.spawnmob;
+import me.xydesu.core.Command.Commands.*;
 import me.xydesu.core.Events.Attack;
 import me.xydesu.core.Events.BlockInteractListener;
 import me.xydesu.core.Events.ExpListener;
@@ -71,7 +65,8 @@ public final class Core extends JavaPlugin {
                 new menu(),
                 new ap(),
                 new spawnmob(),
-                new loop()
+                new loop(),
+                new displaytest()
         ).forEach(commands -> {
             PluginCommand pluginCommand = getCommand(commands.getCommand());
             if (pluginCommand != null) {
