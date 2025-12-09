@@ -21,7 +21,6 @@ jobs:
 
     permissions:
       contents: write
-      dependency-submission: write
 
     steps:
     - uses: actions/checkout@v4
