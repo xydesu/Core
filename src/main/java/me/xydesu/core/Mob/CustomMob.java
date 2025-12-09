@@ -13,6 +13,8 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.util.Transformation;
+import org.joml.Vector3f;
 
 import java.util.*;
 
@@ -164,7 +166,21 @@ public abstract class CustomMob {
         display.text(displayName);
         display.setBillboard(Display.Billboard.CENTER);
 
+        // 再往上加 0.3
+        Transformation t = display.getTransformation();
+        Vector3f pos = t.getTranslation();
+        pos.add(0f, 0.3f, 0f);
+
+        display.setTransformation(new Transformation(
+                pos,
+                t.getLeftRotation(),
+                t.getScale(),
+                t.getRightRotation()
+        ));
+
         entity.addPassenger(display);
+
+
 
         line.put(entity, display);
     }
