@@ -24,7 +24,7 @@
     - [ ] 建立 `RegionManager` 定義怪物生成區。
     - [ ] 製作 `MobSpawnTask` 自動在區域內生成 `CustomMob`。
 - [ ] **任務與 NPC (Quests & NPCs)**
-    - [ ] 製作 NPC 對話 GUI (利用現有的 Menu 系統)。
+    - [ ] 製作 NPC 對話 GUI (或許使用TextDisplay或ActionBar)。
     - [ ] 建立簡單的任務目標 (例如：殺死 10 隻 SuperZombie)。
 
 ## 🎨 視覺與介面 (Visuals & UI)
