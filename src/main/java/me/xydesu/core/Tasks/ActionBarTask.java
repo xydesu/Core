@@ -33,15 +33,7 @@ public class ActionBarTask extends BukkitRunnable {
                     .append(Component.text((int) currentMana + " / " + (int) maxMana, NamedTextColor.AQUA)
                             .decoration(TextDecoration.BOLD, false));
 
-            Component Health = Component.text()
-                    .append(Component.text("\uE000"))
-                    .build();
-
-            Component Mana = Component.text()
-                    .append(Component.text("\uE001"))
-                    .build();
-
-            bukkitPlayer.sendActionBar(hpComponent.append(separator).append(manaComponent).append(Health).append(Mana));
+            bukkitPlayer.sendActionBar(hpComponent.append(separator).append(manaComponent));
         }
     }
 

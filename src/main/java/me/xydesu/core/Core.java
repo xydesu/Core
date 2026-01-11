@@ -8,6 +8,7 @@ import me.xydesu.core.Events.HealthListener;
 import me.xydesu.core.Events.ItemUpdateListener;
 import me.xydesu.core.Events.MobDeathListener;
 import me.xydesu.core.Events.PlayerDataListener;
+import me.xydesu.core.Events.SkillTriggerListener;
 import me.xydesu.core.Events.StaminaListener;
 import me.xydesu.core.GUI.GUIListener;
 import me.xydesu.core.Tasks.*;
@@ -53,6 +54,7 @@ public final class Core extends JavaPlugin {
                 new ExpListener(),
                 new MobDeathListener(),
                 new PlayerDataListener(),
+                new SkillTriggerListener(),
                 new StaminaListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
 

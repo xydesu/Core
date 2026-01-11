@@ -1,10 +1,26 @@
 package me.xydesu.core.Item;
 
-import me.xydesu.core.Item.Items.Weapons.SCYTHE.AOE_TEST;
+import me.xydesu.core.Item.Items.Accessories.TEST_AMULET;
+import me.xydesu.core.Item.Items.Accessories.TEST_NECKLACE;
+import me.xydesu.core.Item.Items.Accessories.TEST_RING;
+import me.xydesu.core.Item.Items.Armor.*;
+import me.xydesu.core.Item.Items.Misc.TEST_CONSUMABLE;
+import me.xydesu.core.Item.Items.Misc.TEST_MATERIAL;
+import me.xydesu.core.Item.Items.Misc.TEST_MISC;
+import me.xydesu.core.Item.Items.Misc.TEST_QUEST_ITEM;
+import me.xydesu.core.Item.Items.Tools.*;
 import me.xydesu.core.Item.Items.Weapons.Bows.BOW_TEST;
+import me.xydesu.core.Player.Class.ClassManager;
+import me.xydesu.core.Item.Items.Weapons.Crossbows.TEST_CROSSBOW;
+import me.xydesu.core.Item.Items.Weapons.Daggers.TEST_DAGGER;
+import me.xydesu.core.Item.Items.Weapons.Greatswords.TEST_GREATSWORD;
+import me.xydesu.core.Item.Items.Weapons.SCYTHE.AOE_TEST;
 import me.xydesu.core.Item.Items.Weapons.SCYTHE.Reaper_of_Fate;
+import me.xydesu.core.Item.Items.Weapons.SCYTHE.TEST_SCYTHE;
+import me.xydesu.core.Item.Items.Weapons.Staffs.TEST_STAFF;
 import me.xydesu.core.Item.Items.Weapons.Swords.Hyperion;
 import me.xydesu.core.Item.Items.Weapons.Swords.TEST_SWORD;
+import me.xydesu.core.Player.Player;
 import me.xydesu.core.Utils.Keys;
 import me.xydesu.core.Utils.PDC;
 import net.kyori.adventure.text.Component;
@@ -30,10 +46,40 @@ public abstract class Item {
     static {
         registeredItems.addAll(List.of(
                 new TEST_SWORD(),
-                new AOE_TEST(),
+                new TEST_GREATSWORD(),
+                new TEST_DAGGER(),
                 new BOW_TEST(),
+                new TEST_CROSSBOW(),
+                new TEST_STAFF(),
+                new TEST_SCYTHE(),
+                new AOE_TEST(),
+                new Reaper_of_Fate(),
                 new Hyperion(),
-                new Reaper_of_Fate()));
+
+                // Tools
+                new TEST_AXE(),
+                new TEST_PICKAXE(),
+                new TEST_SHOVEL(),
+                new TEST_HOE(),
+                new TEST_FISHING_ROD(),
+
+                // Armor
+                new TEST_HELMET(),
+                new TEST_CHESTPLATE(),
+                new TEST_LEGGINGS(),
+                new TEST_BOOTS(),
+                new TEST_CLOAK(),
+
+                // Accessories
+                new TEST_RING(),
+                new TEST_NECKLACE(),
+                new TEST_AMULET(),
+
+                // Misc
+                new TEST_CONSUMABLE(),
+                new TEST_QUEST_ITEM(),
+                new TEST_MATERIAL(),
+                new TEST_MISC()));
     }
 
     public abstract String getID();
@@ -339,6 +385,20 @@ public abstract class Item {
 
         lore.add(separator);
 
+        // Class Usability (Added)
+        if (item.getToolType().isWeapon()) {
+            List<String> validClasses = new ArrayList<>();
+            for (ClassManager cm : ClassManager.getAllClasses()) {
+                if (cm.getWeaponType() == item.getToolType()) {
+                    validClasses.add(cm.classDisplay());
+                }
+            }
+            if (!validClasses.isEmpty()) {
+                lore.add(mm.deserialize("<italic:false><gray>適用職業：<white>" + String.join(", ", validClasses)));
+                lore.add(separator);
+            }
+        }
+
         // Description
         List<String> desc = item.getLore();
         if (!desc.isEmpty()) {
@@ -512,6 +572,20 @@ public abstract class Item {
 
         lore.add(separator);
 
+        // Class Usability (Added)
+        if (item.getToolType().isWeapon()) {
+            List<String> validClasses = new ArrayList<>();
+            for (ClassManager cm : ClassManager.getAllClasses()) {
+                if (cm.getWeaponType() == item.getToolType()) {
+                    validClasses.add(cm.classDisplay());
+                }
+            }
+            if (!validClasses.isEmpty()) {
+                lore.add(mm.deserialize("<italic:false><gray>適用職業：<white>" + String.join(", ", validClasses)));
+                lore.add(separator);
+            }
+        }
+
         // Description
         List<String> desc = item.getLore();
         if (!desc.isEmpty()) {
@@ -658,6 +732,35 @@ public abstract class Item {
         currentMeta.lore(lore);
 
         item.setItemMeta(currentMeta);
+    }
+
+    public static ToolType getToolType(ItemStack item) {
+        if (item == null || item.getType() == Material.AIR)
+            return null;
+        String id = PDC.get(item, Keys.ID, PersistentDataType.STRING, null);
+        if (id == null)
+            return null;
+
+        for (Item registered : registeredItems) {
+            if (registered.getID().equals(id)) {
+                return registered.getToolType();
+            }
+        }
+        return null;
+    }
+
+    public static boolean canUse(Player player, ItemStack item) {
+        ToolType type = getToolType(item);
+        if (type == null)
+            return true; // Only restrict custom items
+
+        if (!type.isWeapon())
+            return true; // Non-weapons are usable by everyone
+
+        if (player.getPlayerClass() == null)
+            return false; // logic: weapon requires class match, no class = mismatch
+
+        return player.getPlayerClass().getWeaponType() == type;
     }
 
 }

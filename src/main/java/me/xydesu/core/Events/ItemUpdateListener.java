@@ -46,9 +46,11 @@ public class ItemUpdateListener implements Listener {
     }
 
     private void updateItem(ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType().isAir()) return;
+        if (itemStack == null || itemStack.getType().isAir())
+            return;
 
-        if (PDC.has(itemStack, Keys.ID, PersistentDataType.STRING)) return;
+        if (PDC.has(itemStack, Keys.ID, PersistentDataType.STRING))
+            return;
 
         System.out.println("[Debug] Checking item: " + itemStack.getType());
 
@@ -65,7 +67,8 @@ public class ItemUpdateListener implements Listener {
     }
 
     private void updateVanillaItem(ItemStack itemStack) {
-        Multimap<Attribute, AttributeModifier> modifiers = itemStack.getType().getDefaultAttributeModifiers(EquipmentSlot.HAND);
+        Multimap<Attribute, AttributeModifier> modifiers = itemStack.getType()
+                .getDefaultAttributeModifiers(EquipmentSlot.HAND);
 
         double damage = 0;
         boolean hasDamage = false;
@@ -81,7 +84,8 @@ public class ItemUpdateListener implements Listener {
 
         Rarity rarity = getVanillaRarity(itemStack.getType());
         ItemMeta meta = itemStack.getItemMeta();
-        if (meta == null) return;
+        if (meta == null)
+            return;
 
         String chineseName = me.xydesu.core.Utils.Translation.get(itemStack.getType());
         Component displayName;
@@ -90,7 +94,7 @@ public class ItemUpdateListener implements Listener {
         } else {
             displayName = Component.translatable(itemStack.getType().getTranslationKey());
         }
-        
+
         displayName = displayName.color(rarity.getColor())
                 .decoration(net.kyori.adventure.text.format.TextDecoration.ITALIC, false);
         meta.displayName(displayName);
@@ -107,17 +111,26 @@ public class ItemUpdateListener implements Listener {
     }
 
     private Rarity getVanillaRarity(org.bukkit.Material material) {
-        if (material == org.bukkit.Material.ELYTRA) return Rarity.LEGENDARY;
-        if (material == org.bukkit.Material.ENCHANTED_GOLDEN_APPLE) return Rarity.MYTHIC;
-        if (material == org.bukkit.Material.GOLDEN_APPLE) return Rarity.RARE;
-        if (material == org.bukkit.Material.NETHER_STAR) return Rarity.LEGENDARY;
-        if (material == org.bukkit.Material.BEACON) return Rarity.LEGENDARY;
-        if (material == org.bukkit.Material.DRAGON_EGG) return Rarity.MYTHIC;
+        if (material == org.bukkit.Material.ELYTRA)
+            return Rarity.LEGENDARY;
+        if (material == org.bukkit.Material.ENCHANTED_GOLDEN_APPLE)
+            return Rarity.MYTHIC;
+        if (material == org.bukkit.Material.GOLDEN_APPLE)
+            return Rarity.RARE;
+        if (material == org.bukkit.Material.NETHER_STAR)
+            return Rarity.LEGENDARY;
+        if (material == org.bukkit.Material.BEACON)
+            return Rarity.LEGENDARY;
+        if (material == org.bukkit.Material.DRAGON_EGG)
+            return Rarity.MYTHIC;
 
         String name = material.name();
-        if (name.startsWith("NETHERITE_")) return Rarity.EPIC;
-        if (name.startsWith("DIAMOND_") || name.startsWith("TRIDENT")) return Rarity.RARE;
-        if (name.startsWith("IRON_") || name.startsWith("GOLDEN_")) return Rarity.COMMON;
+        if (name.startsWith("NETHERITE_"))
+            return Rarity.EPIC;
+        if (name.startsWith("DIAMOND_") || name.startsWith("TRIDENT"))
+            return Rarity.RARE;
+        if (name.startsWith("IRON_") || name.startsWith("GOLDEN_"))
+            return Rarity.COMMON;
         return Rarity.COMMON;
     }
 

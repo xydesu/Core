@@ -49,7 +49,7 @@ public class DatabaseManager {
                             "dexterity DOUBLE," +
                             "current_health DOUBLE," +
                             "current_mana DOUBLE," +
-                            "current_stamina DOUBLE" +
+                            "current_stamina DOUBLE," +
                             "class VARCHAR(50)" +
                             ")")) {
                 statement.executeUpdate();
@@ -88,9 +88,9 @@ public class DatabaseManager {
     public void savePlayer(Player player) {
         try (Connection connection = dataSource.getConnection();
                 PreparedStatement statement = connection.prepareStatement(
-                        "INSERT INTO player_data (uuid, level, exp, attribute_points, strength, agility, intelligence, vitality, dexterity, current_health, current_mana, current_stamina) "
+                        "INSERT INTO player_data (uuid, level, exp, attribute_points, strength, agility, intelligence, vitality, dexterity, current_health, current_mana, current_stamina, class) "
                                 +
-                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
                                 "ON DUPLICATE KEY UPDATE " +
                                 "level = VALUES(level), " +
                                 "exp = VALUES(exp), " +
@@ -102,7 +102,7 @@ public class DatabaseManager {
                                 "dexterity = VALUES(dexterity), " +
                                 "current_health = VALUES(current_health), " +
                                 "current_mana = VALUES(current_mana), " +
-                                "current_stamina = VALUES(current_stamina)" +
+                                "current_stamina = VALUES(current_stamina), " +
                                 "class = VALUES(class)")) {
 
             statement.setString(1, player.getUuid().toString());
