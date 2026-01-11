@@ -66,7 +66,9 @@ public final class Core extends JavaPlugin {
                 new ap(),
                 new spawnmob(),
                 new loop(),
-                new displaytest()
+                new displaytest(),
+                new dialog(),
+                new _class()
         ).forEach(commands -> {
             PluginCommand pluginCommand = getCommand(commands.getCommand());
             if (pluginCommand != null) {
@@ -78,7 +80,7 @@ public final class Core extends JavaPlugin {
             }
         });
 
-        //new ActionBarTask().runTaskTimer(this, 0L, 20L);
+        new ActionBarTask().runTaskTimer(this, 0L, 20L);
         
         /*PlayerHudTask hudTask = new PlayerHudTask();
         hudTask.runTaskTimer(this, 0L, 5L); // Update HUD faster (every 0.25s)

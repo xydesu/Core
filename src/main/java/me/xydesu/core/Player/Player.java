@@ -1,5 +1,6 @@
 package me.xydesu.core.Player;
 
+import me.xydesu.core.Player.Class.ClassManager;
 import me.xydesu.core.Utils.Keys;
 import me.xydesu.core.Utils.PDC;
 import org.bukkit.Bukkit;
@@ -33,6 +34,8 @@ public class Player {
     public UUID getUuid() {
         return uuid;
     }
+
+    private ClassManager playerClass;
 
     // Attributes
     private double maxHealth;
@@ -88,10 +91,30 @@ public class Player {
 
         this.level = 1;
         this.exp = 0;
+        this.playerClass = null;
     }
 
     public org.bukkit.entity.Player getBukkitPlayer() {
         return Bukkit.getPlayer(uuid);
+    }
+
+    public void setPlayerClass(ClassManager playerClass) {
+        this.playerClass = playerClass;
+    }
+
+    public void setPlayerClass() {
+        this.playerClass = null;
+    }
+
+    public void setPlayerClass(String className) {
+        ClassManager cm = ClassManager.get(className);
+        if (cm != null) {
+            this.playerClass = cm;
+        }
+    }
+
+    public ClassManager getPlayerClass() {
+        return this.playerClass;
     }
 
     // Getters and Setters

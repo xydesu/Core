@@ -20,41 +20,42 @@ public class ActionBarTask extends BukkitRunnable {
             int currentMana = (int) customPlayer.getCurrentMana();
             int maxMana = (int) customPlayer.getMaxMana();
 
+            TextColor hpColor = ((double) currentHealth / maxHealth < 0.3) ? NamedTextColor.DARK_RED : NamedTextColor.RED;
+            Component hpComponent = Component.text("❤ HP: ", NamedTextColor.GRAY)
+                    .append(Component.text((int)currentHealth + " / " + (int)maxHealth, hpColor).decoration(TextDecoration.BOLD, false));
+            Component separator = Component.text(" | ", NamedTextColor.DARK_GRAY).decoration(TextDecoration.BOLD, false);
+
+            // MP 部分
+            Component manaComponent = Component.text("✎ MP: ", NamedTextColor.GRAY)
+                    .append(Component.text((int)currentMana + " / " + (int)maxMana, NamedTextColor.AQUA).decoration(TextDecoration.BOLD, false));
+
             Component Health = Component.text()
                     .append(Component.text("\uE000"))
                     .build();
 
             Component hp_progress = Component.text(getHpFillGlyph((double) currentHealth /maxHealth));
-            Component mana_progress = Component.text(getManaFillGlyph((double) currentMana /maxMana));
 
-            Component Negative = Component.text("\uF801");
+            Component Negative = Component.text("\uF804");
             Component Negative_Half = Component.text("\uF805");
-            Component Negative_one = Component.text("\uF806");
 
             Component Mana = Component.text()
                     .append(Component.text("\uE001"))
                     .build();
 
             //bukkitPlayer.sendActionBar(actionBar);
-            //bukkitPlayer.sendActionBar(hpComponent.append(separator).append(manaComponent).append(Negative).append(Health).append(Negative).append(Mana));
+            bukkitPlayer.sendActionBar(hpComponent.append(separator).append(manaComponent).append(Negative).append(Health).append(Negative).append(Mana));
             //bukkitPlayer.sendMessage(getHpFillGlyph(currentHealth));
-            bukkitPlayer.sendActionBar(Health
+            /*bukkitPlayer.sendActionBar(Health
                     .append(Negative)
                     .append(hp_progress)
-                    .append(Negative)
-                    .append(Negative_one)
-                    .append(Negative_one)
-                    .append(Mana)
-                    .append(Negative)
-                    .append(mana_progress)
-            );
-            /*Component testBar = Component.text()
-                    .append(Component.text("\uE000")) // 第一層背景
-                    .append(Component.text("\uF801")) // 負空間 (假設你是 -182)
-                    .append(Component.text("\uE100").color(NamedTextColor.RED)) // 第二層背景 (變紅色以利區分)
+            );*/
+            Component testBar = Component.text()
+                    .append(Component.text("\uE000")) // 1. 畫背景
+                    .append(Component.text("\uF804")) // 2. 倒退 (理論上要退回起點)
+                    .append(Component.text("I"))      // 3. 畫一個 'I'
                     .build();
 
-            bukkitPlayer.sendActionBar(testBar);*/
+            //bukkitPlayer.sendActionBar(testBar);
         }
     }
 
@@ -64,15 +65,6 @@ public class ActionBarTask extends BukkitRunnable {
         if (index > 100) index = 100;
         // \uE010 is base.
         char base = '\uE100';
-        return String.valueOf((char)(base + index));
-    }
-
-    private String getManaFillGlyph(double percentage) {
-        int index = (int) (percentage * 100);
-        if (index < 0) index = 0;
-        if (index > 100) index = 100;
-        // \uE010 is base.
-        char base = '\uE165';
         return String.valueOf((char)(base + index));
     }
 }

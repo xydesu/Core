@@ -20,3 +20,7 @@ commands:
     usage: /<command> <times> <delay> <command>
   displaytest:
     usage: /<command>
+  dialog:
+    usage: /<command>
+  class:
+    usage: /<command>

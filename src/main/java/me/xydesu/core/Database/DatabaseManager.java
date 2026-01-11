@@ -2,6 +2,7 @@ package me.xydesu.core.Database;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import me.xydesu.core.Player.Class.ClassManager;
 import me.xydesu.core.Player.Player;
 
 import java.sql.Connection;
@@ -50,6 +51,7 @@ public class DatabaseManager {
                              "current_health DOUBLE," +
                              "current_mana DOUBLE," +
                              "current_stamina DOUBLE" +
+                             "class VARCHAR(50)" +
                              ")")) {
                 statement.executeUpdate();
             }
@@ -67,6 +69,11 @@ public class DatabaseManager {
 
             try (PreparedStatement statement = connection.prepareStatement(
                     "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS current_stamina DOUBLE DEFAULT 20")) {
+                statement.executeUpdate();
+            } catch (SQLException ignored) {}
+
+            try (PreparedStatement statement = connection.prepareStatement(
+                    "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS class VARCHAR(50) DEFAULT 'None'")) {
                 statement.executeUpdate();
             } catch (SQLException ignored) {}
 
@@ -91,7 +98,9 @@ public class DatabaseManager {
                              "dexterity = VALUES(dexterity), " +
                              "current_health = VALUES(current_health), " +
                              "current_mana = VALUES(current_mana), " +
-                             "current_stamina = VALUES(current_stamina)")) {
+                             "current_stamina = VALUES(current_stamina)" +
+                             "class = VALUES(class)"
+                     )) {
             
             statement.setString(1, player.getUuid().toString());
             statement.setInt(2, player.getLevel());
@@ -105,6 +114,8 @@ public class DatabaseManager {
             statement.setDouble(10, player.getCurrentHealth());
             statement.setDouble(11, player.getCurrentMana());
             statement.setDouble(12, player.getCurrentStamina());
+
+            statement.setString(13, player.getPlayerClass().className());
             
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -136,6 +147,13 @@ public class DatabaseManager {
                 } catch (SQLException ignored) {
                     // Column might not exist yet if migration failed or something
                 }
+
+                String className = resultSet.getString("class");
+                ClassManager _class = ClassManager.get(className);
+                if (_class != null) {
+                    player.setPlayerClass(_class);
+                }
+
             }
         } catch (SQLException e) {
             e.printStackTrace();
