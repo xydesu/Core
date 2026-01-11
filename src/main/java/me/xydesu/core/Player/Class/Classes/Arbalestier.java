@@ -18,6 +18,9 @@ import org.bukkit.util.Vector;
 
 import java.util.List;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+
 public class Arbalestier extends ClassManager {
     @Override
     public String className() {
@@ -87,7 +90,7 @@ public class Arbalestier extends ClassManager {
         trap.setSmall(true);
         trap.setGravity(true);
         trap.setGravity(true);
-        trap.setCustomName("§cExplosive Trap");
+        trap.customName(Component.text("Explosive Trap", NamedTextColor.RED));
         trap.setCustomNameVisible(false); // Only visible if looking closely? Or just hidden.
 
         new BukkitRunnable() {
