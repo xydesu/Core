@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.UUID;
 
 public class DatabaseManager {
 
@@ -38,21 +37,21 @@ public class DatabaseManager {
     private void createTable() {
         try (Connection connection = dataSource.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(
-                     "CREATE TABLE IF NOT EXISTS player_data (" +
-                             "uuid VARCHAR(36) PRIMARY KEY," +
-                             "level INT," +
-                             "exp DOUBLE," +
-                             "attribute_points INT," +
-                             "strength DOUBLE," +
-                             "agility DOUBLE," +
-                             "intelligence DOUBLE," +
-                             "vitality DOUBLE," +
-                             "dexterity DOUBLE," +
-                             "current_health DOUBLE," +
-                             "current_mana DOUBLE," +
-                             "current_stamina DOUBLE" +
-                             "class VARCHAR(50)" +
-                             ")")) {
+                    "CREATE TABLE IF NOT EXISTS player_data (" +
+                            "uuid VARCHAR(36) PRIMARY KEY," +
+                            "level INT," +
+                            "exp DOUBLE," +
+                            "attribute_points INT," +
+                            "strength DOUBLE," +
+                            "agility DOUBLE," +
+                            "intelligence DOUBLE," +
+                            "vitality DOUBLE," +
+                            "dexterity DOUBLE," +
+                            "current_health DOUBLE," +
+                            "current_mana DOUBLE," +
+                            "current_stamina DOUBLE" +
+                            "class VARCHAR(50)" +
+                            ")")) {
                 statement.executeUpdate();
             }
 
@@ -60,22 +59,26 @@ public class DatabaseManager {
             try (PreparedStatement statement = connection.prepareStatement(
                     "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS current_health DOUBLE DEFAULT 20")) {
                 statement.executeUpdate();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
 
             try (PreparedStatement statement = connection.prepareStatement(
                     "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS current_mana DOUBLE DEFAULT 20")) {
                 statement.executeUpdate();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
 
             try (PreparedStatement statement = connection.prepareStatement(
                     "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS current_stamina DOUBLE DEFAULT 20")) {
                 statement.executeUpdate();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
 
             try (PreparedStatement statement = connection.prepareStatement(
                     "ALTER TABLE player_data ADD COLUMN IF NOT EXISTS class VARCHAR(50) DEFAULT 'None'")) {
                 statement.executeUpdate();
-            } catch (SQLException ignored) {}
+            } catch (SQLException ignored) {
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -84,24 +87,24 @@ public class DatabaseManager {
 
     public void savePlayer(Player player) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(
-                     "INSERT INTO player_data (uuid, level, exp, attribute_points, strength, agility, intelligence, vitality, dexterity, current_health, current_mana, current_stamina) " +
-                             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                             "ON DUPLICATE KEY UPDATE " +
-                             "level = VALUES(level), " +
-                             "exp = VALUES(exp), " +
-                             "attribute_points = VALUES(attribute_points), " +
-                             "strength = VALUES(strength), " +
-                             "agility = VALUES(agility), " +
-                             "intelligence = VALUES(intelligence), " +
-                             "vitality = VALUES(vitality), " +
-                             "dexterity = VALUES(dexterity), " +
-                             "current_health = VALUES(current_health), " +
-                             "current_mana = VALUES(current_mana), " +
-                             "current_stamina = VALUES(current_stamina)" +
-                             "class = VALUES(class)"
-                     )) {
-            
+                PreparedStatement statement = connection.prepareStatement(
+                        "INSERT INTO player_data (uuid, level, exp, attribute_points, strength, agility, intelligence, vitality, dexterity, current_health, current_mana, current_stamina) "
+                                +
+                                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                                "ON DUPLICATE KEY UPDATE " +
+                                "level = VALUES(level), " +
+                                "exp = VALUES(exp), " +
+                                "attribute_points = VALUES(attribute_points), " +
+                                "strength = VALUES(strength), " +
+                                "agility = VALUES(agility), " +
+                                "intelligence = VALUES(intelligence), " +
+                                "vitality = VALUES(vitality), " +
+                                "dexterity = VALUES(dexterity), " +
+                                "current_health = VALUES(current_health), " +
+                                "current_mana = VALUES(current_mana), " +
+                                "current_stamina = VALUES(current_stamina)" +
+                                "class = VALUES(class)")) {
+
             statement.setString(1, player.getUuid().toString());
             statement.setInt(2, player.getLevel());
             statement.setDouble(3, player.getExp());
@@ -116,7 +119,7 @@ public class DatabaseManager {
             statement.setDouble(12, player.getCurrentStamina());
 
             statement.setString(13, player.getPlayerClass().className());
-            
+
             statement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -125,11 +128,11 @@ public class DatabaseManager {
 
     public void loadPlayer(Player player) {
         try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_data WHERE uuid = ?")) {
-            
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_data WHERE uuid = ?")) {
+
             statement.setString(1, player.getUuid().toString());
             ResultSet resultSet = statement.executeQuery();
-            
+
             if (resultSet.next()) {
                 player.setLevel(resultSet.getInt("level"));
                 player.setExp(resultSet.getDouble("exp"));
@@ -141,7 +144,8 @@ public class DatabaseManager {
                 player.setAllocatedDexterity(resultSet.getDouble("dexterity"));
                 player.setCurrentHealth(resultSet.getDouble("current_health"));
                 player.setCurrentMana(resultSet.getDouble("current_mana"));
-                // Check if column exists (for backward compatibility if not using ALTER TABLE correctly, but we did)
+                // Check if column exists (for backward compatibility if not using ALTER TABLE
+                // correctly, but we did)
                 try {
                     player.setCurrentStamina(resultSet.getDouble("current_stamina"));
                 } catch (SQLException ignored) {

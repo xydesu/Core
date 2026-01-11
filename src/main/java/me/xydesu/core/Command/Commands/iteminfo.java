@@ -1,7 +1,6 @@
 package me.xydesu.core.Command.Commands;
 
 import me.xydesu.core.Command.Command;
-import me.xydesu.core.Item.Item;
 import me.xydesu.core.Utils.Keys;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -11,8 +10,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.Map;
-
 public class iteminfo extends Command {
     @Override
     public String getCommand() {
@@ -21,9 +18,9 @@ public class iteminfo extends Command {
 
     @Override
     public void onExecute(CommandSender sender, String[] args) {
-        if (sender instanceof Player player){
+        if (sender instanceof Player player) {
             ItemStack item = player.getInventory().getItemInMainHand();
-            if(item != null && item.getType() != Material.AIR){
+            if (item != null && item.getType() != Material.AIR) {
                 ItemMeta meta = item.getItemMeta();
                 player.sendMessage("==========Meta Data==========");
                 if (meta.hasDisplayName()) {
@@ -34,17 +31,21 @@ public class iteminfo extends Command {
 
                 if (meta.hasLore()) {
                     player.sendMessage("Lore:");
-                    for(Component component : meta.lore()){
+                    for (Component component : meta.lore()) {
                         player.sendMessage(component);
                     }
                 }
 
                 player.sendMessage("==========Item Data==========");
-                player.sendMessage("ID: "+meta.getPersistentDataContainer().get(Keys.ID, PersistentDataType.STRING));
-                player.sendMessage("Rarity: " + meta.getPersistentDataContainer().get(Keys.RARITY, PersistentDataType.STRING));
-                player.sendMessage("Damage: " + meta.getPersistentDataContainer().get(Keys.DAMAGE, PersistentDataType.DOUBLE));
-                player.sendMessage("Range: " + meta.getPersistentDataContainer().get(Keys.RANGE, PersistentDataType.DOUBLE));
-                player.sendMessage("AOE: " + meta.getPersistentDataContainer().get(Keys.AOE, PersistentDataType.BOOLEAN));
+                player.sendMessage("ID: " + meta.getPersistentDataContainer().get(Keys.ID, PersistentDataType.STRING));
+                player.sendMessage(
+                        "Rarity: " + meta.getPersistentDataContainer().get(Keys.RARITY, PersistentDataType.STRING));
+                player.sendMessage(
+                        "Damage: " + meta.getPersistentDataContainer().get(Keys.DAMAGE, PersistentDataType.DOUBLE));
+                player.sendMessage(
+                        "Range: " + meta.getPersistentDataContainer().get(Keys.RANGE, PersistentDataType.DOUBLE));
+                player.sendMessage(
+                        "AOE: " + meta.getPersistentDataContainer().get(Keys.AOE, PersistentDataType.BOOLEAN));
 
                 String ability = meta.getPersistentDataContainer().get(Keys.ABILITY, PersistentDataType.STRING);
                 if (ability != null) {

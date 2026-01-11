@@ -12,7 +12,6 @@ import me.xydesu.core.Events.StaminaListener;
 import me.xydesu.core.GUI.GUIListener;
 import me.xydesu.core.Tasks.*;
 import me.xydesu.core.Database.DatabaseManager;
-import me.xydesu.core.Utils.ResourcePackManager;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -32,10 +31,10 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         plugin = this;
-        //saveDefaultConfig();
+        // saveDefaultConfig();
 
         // Package Resource Pack
-        //ResourcePackManager.packageResourcePack(this);
+        // ResourcePackManager.packageResourcePack(this);
 
         databaseManager = new DatabaseManager();
         databaseManager.connect(
@@ -43,8 +42,7 @@ public final class Core extends JavaPlugin {
                 "3306",
                 "minecraft",
                 "core",
-                "corepassword"
-        );
+                "corepassword");
 
         List.of(
                 new Attack(),
@@ -55,8 +53,8 @@ public final class Core extends JavaPlugin {
                 new ExpListener(),
                 new MobDeathListener(),
                 new PlayerDataListener(),
-                new StaminaListener()
-        ).forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
+                new StaminaListener())
+                .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
 
         List.of(
                 new item(),
@@ -68,30 +66,32 @@ public final class Core extends JavaPlugin {
                 new loop(),
                 new displaytest(),
                 new dialog(),
-                new _class()
-        ).forEach(commands -> {
-            PluginCommand pluginCommand = getCommand(commands.getCommand());
-            if (pluginCommand != null) {
-                pluginCommand.setExecutor((commandSender, command, s, args) -> {
-                    commands.onExecute(commandSender, args);
-                    return true;
+                new _class()).forEach(commands -> {
+                    PluginCommand pluginCommand = getCommand(commands.getCommand());
+                    if (pluginCommand != null) {
+                        pluginCommand.setExecutor((commandSender, command, s, args) -> {
+                            commands.onExecute(commandSender, args);
+                            return true;
+                        });
+                        pluginCommand.setTabCompleter((commandSender, command, s, args) -> commands
+                                .onTabComplete(commandSender, command, s, args));
+                    }
                 });
-                pluginCommand.setTabCompleter((commandSender, command, s, args) -> commands.onTabComplete(commandSender, command, s, args));
-            }
-        });
 
         new ActionBarTask().runTaskTimer(this, 0L, 20L);
-        
-        /*PlayerHudTask hudTask = new PlayerHudTask();
-        hudTask.runTaskTimer(this, 0L, 5L); // Update HUD faster (every 0.25s)
-        getServer().getPluginManager().registerEvents(hudTask, this);*/
-        
+
+        /*
+         * PlayerHudTask hudTask = new PlayerHudTask();
+         * hudTask.runTaskTimer(this, 0L, 5L); // Update HUD faster (every 0.25s)
+         * getServer().getPluginManager().registerEvents(hudTask, this);
+         */
+
         new ManaRegenTask().runTaskTimer(this, 0L, 20L);
         new HealthRegenTask().runTaskTimer(this, 0L, 20L);
         new StaminaTask().runTaskTimer(this, 0L, 4L); // Run every 4 ticks (0.2s)
         new StatUpdateTask().runTaskTimer(this, 0L, 10L);
         new AutoSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L); // Save every 5 minutes
-        //new CustomMobTask().runTaskTimer(this, 0L, 0L);
+        // new CustomMobTask().runTaskTimer(this, 0L, 0L);
 
         // Load data for online players (in case of reload)
         for (Player player : getServer().getOnlinePlayers()) {
