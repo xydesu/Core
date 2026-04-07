@@ -1,25 +1,25 @@
 package me.xydesu.core.Item;
 
-import me.xydesu.core.Item.Items.Accessories.TEST_AMULET;
-import me.xydesu.core.Item.Items.Accessories.TEST_NECKLACE;
-import me.xydesu.core.Item.Items.Accessories.TEST_RING;
+import me.xydesu.core.Item.Items.Accessories.TestAmulet;
+import me.xydesu.core.Item.Items.Accessories.TestNecklace;
+import me.xydesu.core.Item.Items.Accessories.TestRing;
 import me.xydesu.core.Item.Items.Armor.*;
-import me.xydesu.core.Item.Items.Misc.TEST_CONSUMABLE;
-import me.xydesu.core.Item.Items.Misc.TEST_MATERIAL;
-import me.xydesu.core.Item.Items.Misc.TEST_MISC;
-import me.xydesu.core.Item.Items.Misc.TEST_QUEST_ITEM;
+import me.xydesu.core.Item.Items.Misc.TestConsumable;
+import me.xydesu.core.Item.Items.Misc.TestMaterial;
+import me.xydesu.core.Item.Items.Misc.TestMisc;
+import me.xydesu.core.Item.Items.Misc.TestQuestItem;
 import me.xydesu.core.Item.Items.Tools.*;
-import me.xydesu.core.Item.Items.Weapons.Bows.BOW_TEST;
+import me.xydesu.core.Item.Items.Weapons.Bows.BowTest;
 import me.xydesu.core.Player.Class.ClassManager;
-import me.xydesu.core.Item.Items.Weapons.Crossbows.TEST_CROSSBOW;
-import me.xydesu.core.Item.Items.Weapons.Daggers.TEST_DAGGER;
-import me.xydesu.core.Item.Items.Weapons.Greatswords.TEST_GREATSWORD;
-import me.xydesu.core.Item.Items.Weapons.SCYTHE.AOE_TEST;
-import me.xydesu.core.Item.Items.Weapons.SCYTHE.Reaper_of_Fate;
-import me.xydesu.core.Item.Items.Weapons.SCYTHE.TEST_SCYTHE;
-import me.xydesu.core.Item.Items.Weapons.Staffs.TEST_STAFF;
+import me.xydesu.core.Item.Items.Weapons.Crossbows.TestCrossbow;
+import me.xydesu.core.Item.Items.Weapons.Daggers.TestDagger;
+import me.xydesu.core.Item.Items.Weapons.Greatswords.TestGreatsword;
+import me.xydesu.core.Item.Items.Weapons.Scythe.AoeTest;
+import me.xydesu.core.Item.Items.Weapons.Scythe.ReaperOfFate;
+import me.xydesu.core.Item.Items.Weapons.Scythe.TestScythe;
+import me.xydesu.core.Item.Items.Weapons.Staffs.TestStaff;
 import me.xydesu.core.Item.Items.Weapons.Swords.Hyperion;
-import me.xydesu.core.Item.Items.Weapons.Swords.TEST_SWORD;
+import me.xydesu.core.Item.Items.Weapons.Swords.TestSword;
 import me.xydesu.core.Player.Player;
 import me.xydesu.core.Utils.Keys;
 import me.xydesu.core.Utils.PDC;
@@ -41,45 +41,49 @@ public abstract class Item {
     MiniMessage mm = MiniMessage.miniMessage();
 
     List<ItemStack> items = new ArrayList<>();
-    public static List<Item> registeredItems = new ArrayList<>();
+    private static final List<Item> registeredItems = new ArrayList<>();
+
+    public static List<Item> getRegisteredItems() {
+        return java.util.Collections.unmodifiableList(registeredItems);
+    }
 
     static {
         registeredItems.addAll(List.of(
-                new TEST_SWORD(),
-                new TEST_GREATSWORD(),
-                new TEST_DAGGER(),
-                new BOW_TEST(),
-                new TEST_CROSSBOW(),
-                new TEST_STAFF(),
-                new TEST_SCYTHE(),
-                new AOE_TEST(),
-                new Reaper_of_Fate(),
+                new TestSword(),
+                new TestGreatsword(),
+                new TestDagger(),
+                new BowTest(),
+                new TestCrossbow(),
+                new TestStaff(),
+                new TestScythe(),
+                new AoeTest(),
+                new ReaperOfFate(),
                 new Hyperion(),
 
                 // Tools
-                new TEST_AXE(),
-                new TEST_PICKAXE(),
-                new TEST_SHOVEL(),
-                new TEST_HOE(),
-                new TEST_FISHING_ROD(),
+                new TestAxe(),
+                new TestPickaxe(),
+                new TestShovel(),
+                new TestHoe(),
+                new TestFishingRod(),
 
                 // Armor
-                new TEST_HELMET(),
-                new TEST_CHESTPLATE(),
-                new TEST_LEGGINGS(),
-                new TEST_BOOTS(),
-                new TEST_CLOAK(),
+                new TestHelmet(),
+                new TestChestplate(),
+                new TestLeggings(),
+                new TestBoots(),
+                new TestCloak(),
 
                 // Accessories
-                new TEST_RING(),
-                new TEST_NECKLACE(),
-                new TEST_AMULET(),
+                new TestRing(),
+                new TestNecklace(),
+                new TestAmulet(),
 
                 // Misc
-                new TEST_CONSUMABLE(),
-                new TEST_QUEST_ITEM(),
-                new TEST_MATERIAL(),
-                new TEST_MISC()));
+                new TestConsumable(),
+                new TestQuestItem(),
+                new TestMaterial(),
+                new TestMisc()));
     }
 
     public abstract String getID();

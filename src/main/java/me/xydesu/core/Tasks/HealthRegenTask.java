@@ -20,24 +20,8 @@ public class HealthRegenTask extends BukkitRunnable {
                 double newHealth = customPlayer.getCurrentHealth() + totalRegen;
                 customPlayer.setCurrentHealth(newHealth); // Setter handles capping at maxHealth
                 
-                // Update vanilla health visual
-                updateVanillaHealth(bukkitPlayer, customPlayer);
+                customPlayer.updateVanillaHealth();
             }
         }
-    }
-
-    private void updateVanillaHealth(org.bukkit.entity.Player bukkitPlayer, Player player) {
-        double maxHealth = player.getMaxHealth();
-        double currentHealth = player.getCurrentHealth();
-        
-        if (maxHealth <= 0) maxHealth = 100; // Prevent division by zero
-        
-        // Scale to 20 hearts
-        double vanillaHealth = (currentHealth / maxHealth) * 20;
-        if (vanillaHealth < 1 && currentHealth > 0) vanillaHealth = 1; // Keep at least half heart if alive
-        if (vanillaHealth > 20) vanillaHealth = 20;
-        if (vanillaHealth < 0) vanillaHealth = 0;
-        
-        bukkitPlayer.setHealth(vanillaHealth);
     }
 }

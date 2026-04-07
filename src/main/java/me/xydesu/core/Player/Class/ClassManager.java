@@ -122,6 +122,10 @@ public abstract class ClassManager {
 
     public abstract double getUltimateCooldown();
 
+    public void clearCooldowns(UUID uuid) {
+        cooldowns.remove(uuid);
+    }
+
     // Helper Methods
     private boolean checkCooldown(Player player, int skillIndex) {
         if (!cooldowns.containsKey(player.getUuid()))

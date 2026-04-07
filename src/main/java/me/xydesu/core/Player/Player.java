@@ -59,7 +59,10 @@ public class Player {
     private double allocatedVitality;
     private double allocatedDexterity;
     
-    public double tempAttackSpeedBonus = 0;
+    private double tempAttackSpeedBonus = 0;
+
+    public double getTempAttackSpeedBonus() { return tempAttackSpeedBonus; }
+    public void setTempAttackSpeedBonus(double bonus) { this.tempAttackSpeedBonus = bonus; }
 
     // Level System
     private int level;
@@ -102,7 +105,7 @@ public class Player {
         this.playerClass = playerClass;
     }
 
-    public void setPlayerClass() {
+    public void clearPlayerClass() {
         this.playerClass = null;
     }
 
@@ -210,8 +213,9 @@ public class Player {
     }
 
     private void checkLevelUp() {
-        while (this.exp >= getRequiredExp()) {
-            this.exp -= getRequiredExp();
+        double required = getRequiredExp();
+        while (this.exp >= required) {
+            this.exp -= required;
             this.level++;
             this.attributePoints += 5; // Add 5 attribute points per level
             // TODO: Add level up effects/rewards here
@@ -220,6 +224,7 @@ public class Player {
                 this.exp = 0;
                 break;
             }
+            required = getRequiredExp();
         }
     }
 
@@ -244,6 +249,17 @@ public class Player {
                 p.setExp((float) Math.min(1.0, this.exp / getRequiredExp()));
             }
         }
+    }
+
+    public void updateVanillaHealth() {
+        org.bukkit.entity.Player p = getBukkitPlayer();
+        if (p == null) return;
+        if (maxHealth <= 0) return;
+        double vanillaHealth = (currentHealth / maxHealth) * 20;
+        if (vanillaHealth < 1 && currentHealth > 0) vanillaHealth = 1;
+        if (vanillaHealth > 20) vanillaHealth = 20;
+        if (vanillaHealth < 0) vanillaHealth = 0;
+        p.setHealth(vanillaHealth);
     }
 
     public void setStat(String stat, double value) {
@@ -305,7 +321,18 @@ public class Player {
             int requiredLevel = PDC.get(item, Keys.REQUIRED_LEVEL, PersistentDataType.INTEGER, 0);
             if (this.level < requiredLevel) {
                 p.getWorld().dropItemNaturally(p.getLocation(), item);
-                item.setAmount(0);
+                // Remove from the correct inventory slot
+                if (item.equals(p.getInventory().getItemInMainHand())) {
+                    p.getInventory().setItemInMainHand(null);
+                } else if (item.equals(p.getInventory().getHelmet())) {
+                    p.getInventory().setHelmet(null);
+                } else if (item.equals(p.getInventory().getChestplate())) {
+                    p.getInventory().setChestplate(null);
+                } else if (item.equals(p.getInventory().getLeggings())) {
+                    p.getInventory().setLeggings(null);
+                } else if (item.equals(p.getInventory().getBoots())) {
+                    p.getInventory().setBoots(null);
+                }
                 p.sendMessage("§c你的等級不足以使用此物品！ (需要等級: " + requiredLevel + ")");
                 continue;
             }

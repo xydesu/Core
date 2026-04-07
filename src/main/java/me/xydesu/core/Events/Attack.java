@@ -195,9 +195,8 @@ public class Attack implements Listener {
         @Nullable
         RayTraceResult blockResult = world.rayTraceBlocks(start, vector, range);
 
-        if (entityResult != null && entityResult.getHitEntity() != null) {
+        if (entityResult != null && entityResult.getHitEntity() instanceof LivingEntity hitEntity) {
             double entityDistance = entityResult.getHitPosition().distance(start.toVector());
-            Entity hitEntity = entityResult.getHitEntity();
 
             if (blockResult != null && blockResult.getHitBlock() != null) {
                 // 取得擊中方塊的距離
@@ -211,9 +210,8 @@ public class Attack implements Listener {
                     DamageCalc.DamageResult result = DamageCalc.getDamage(player, item, hitEntity);
                     double damage = result.damage;
 
-                    LivingEntity hitEntity1 = (LivingEntity) hitEntity;
-                    pendingRangedDamage.put(hitEntity1, result);
-                    hitEntity1.damage(damage, player);
+                    pendingRangedDamage.put(hitEntity, result);
+                    hitEntity.damage(damage, player);
                 }
             } else {
                 // Hit
@@ -222,9 +220,8 @@ public class Attack implements Listener {
                 DamageCalc.DamageResult result = DamageCalc.getDamage(player, item, hitEntity);
                 double damage = result.damage;
 
-                LivingEntity hitEntity1 = (LivingEntity) hitEntity;
-                pendingRangedDamage.put(hitEntity1, result);
-                hitEntity1.damage(damage, player);
+                pendingRangedDamage.put(hitEntity, result);
+                hitEntity.damage(damage, player);
             }
         }
     }

@@ -118,7 +118,7 @@ public class DatabaseManager {
             statement.setDouble(11, player.getCurrentMana());
             statement.setDouble(12, player.getCurrentStamina());
 
-            statement.setString(13, player.getPlayerClass().className());
+            statement.setString(13, player.getPlayerClass() != null ? player.getPlayerClass().className() : "None");
 
             statement.executeUpdate();
         } catch (SQLException e) {
@@ -131,33 +131,27 @@ public class DatabaseManager {
                 PreparedStatement statement = connection.prepareStatement("SELECT * FROM player_data WHERE uuid = ?")) {
 
             statement.setString(1, player.getUuid().toString());
-            ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                player.setLevel(resultSet.getInt("level"));
-                player.setExp(resultSet.getDouble("exp"));
-                player.setAttributePoints(resultSet.getInt("attribute_points"));
-                player.setAllocatedStrength(resultSet.getDouble("strength"));
-                player.setAllocatedAgility(resultSet.getDouble("agility"));
-                player.setAllocatedIntelligence(resultSet.getDouble("intelligence"));
-                player.setAllocatedVitality(resultSet.getDouble("vitality"));
-                player.setAllocatedDexterity(resultSet.getDouble("dexterity"));
-                player.setCurrentHealth(resultSet.getDouble("current_health"));
-                player.setCurrentMana(resultSet.getDouble("current_mana"));
-                // Check if column exists (for backward compatibility if not using ALTER TABLE
-                // correctly, but we did)
-                try {
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    player.setLevel(resultSet.getInt("level"));
+                    player.setExp(resultSet.getDouble("exp"));
+                    player.setAttributePoints(resultSet.getInt("attribute_points"));
+                    player.setAllocatedStrength(resultSet.getDouble("strength"));
+                    player.setAllocatedAgility(resultSet.getDouble("agility"));
+                    player.setAllocatedIntelligence(resultSet.getDouble("intelligence"));
+                    player.setAllocatedVitality(resultSet.getDouble("vitality"));
+                    player.setAllocatedDexterity(resultSet.getDouble("dexterity"));
+                    player.setCurrentHealth(resultSet.getDouble("current_health"));
+                    player.setCurrentMana(resultSet.getDouble("current_mana"));
                     player.setCurrentStamina(resultSet.getDouble("current_stamina"));
-                } catch (SQLException ignored) {
-                    // Column might not exist yet if migration failed or something
-                }
 
-                String className = resultSet.getString("class");
-                ClassManager _class = ClassManager.get(className);
-                if (_class != null) {
-                    player.setPlayerClass(_class);
+                    String className = resultSet.getString("class");
+                    ClassManager cls = ClassManager.get(className);
+                    if (cls != null) {
+                        player.setPlayerClass(cls);
+                    }
                 }
-
             }
         } catch (SQLException e) {
             e.printStackTrace();

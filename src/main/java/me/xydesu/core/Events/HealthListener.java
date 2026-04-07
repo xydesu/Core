@@ -28,7 +28,7 @@ public class HealthListener implements Listener {
         } else {
             // Prevent vanilla damage but update visual health
             event.setDamage(0);
-            updateVanillaHealth(bukkitPlayer, player);
+            player.updateVanillaHealth();
         }
     }
 
@@ -62,7 +62,7 @@ public class HealthListener implements Listener {
         player.setCurrentHealth(player.getCurrentHealth() + amount);
         
         // Update visual
-        updateVanillaHealth(bukkitPlayer, player);
+        player.updateVanillaHealth();
         
         // Cancel vanilla regen
         event.setCancelled(true);
@@ -76,7 +76,7 @@ public class HealthListener implements Listener {
             event.getPlayer().getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
         }
         event.getPlayer().setHealthScale(20);
-        updateVanillaHealth(event.getPlayer(), player);
+        player.updateVanillaHealth();
     }
 
     @EventHandler
@@ -84,21 +84,6 @@ public class HealthListener implements Listener {
         Player player = Player.get(event.getPlayer());
         player.setCurrentHealth(player.getMaxHealth());
         event.getPlayer().setHealthScale(20);
-        updateVanillaHealth(event.getPlayer(), player);
-    }
-
-    private void updateVanillaHealth(org.bukkit.entity.Player bukkitPlayer, Player player) {
-        double maxHealth = player.getMaxHealth();
-        double currentHealth = player.getCurrentHealth();
-        
-        if (maxHealth <= 0) maxHealth = 100; // Prevent division by zero
-        
-        // Scale to 20 hearts
-        double vanillaHealth = (currentHealth / maxHealth) * 20;
-        if (vanillaHealth < 1 && currentHealth > 0) vanillaHealth = 1; // Keep at least half heart if alive
-        if (vanillaHealth > 20) vanillaHealth = 20;
-        if (vanillaHealth < 0) vanillaHealth = 0;
-        
-        bukkitPlayer.setHealth(vanillaHealth);
+        player.updateVanillaHealth();
     }
 }

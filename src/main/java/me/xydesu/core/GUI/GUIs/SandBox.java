@@ -23,7 +23,7 @@ public class SandBox extends GUI {
     public SandBox() {
         super(54, Component.text("SandBox"));
 
-        for (Item item : Item.registeredItems) {
+        for (Item item : Item.getRegisteredItems()) {
             getInventory().addItem(item.getDisplayItem());
         }
 
