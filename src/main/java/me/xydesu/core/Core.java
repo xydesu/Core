@@ -43,7 +43,7 @@ public final class Core extends JavaPlugin {
                 getConfig().getString("database.port", "3306"),
                 getConfig().getString("database.database", "minecraft"),
                 getConfig().getString("database.username", "core"),
-                getConfig().getString("database.password", "corepassword"));
+                getConfig().getString("database.password", "CHANGE_ME"));
 
         List.of(
                 new Attack(),
