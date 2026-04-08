@@ -32,18 +32,18 @@ public final class Core extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         plugin = this;
-        // saveDefaultConfig();
+        saveDefaultConfig();
 
         // Package Resource Pack
         // ResourcePackManager.packageResourcePack(this);
 
         databaseManager = new DatabaseManager();
         databaseManager.connect(
-                "127.0.0.1",
-                "3306",
-                "minecraft",
-                "core",
-                "corepassword");
+                getConfig().getString("database.host", "127.0.0.1"),
+                getConfig().getString("database.port", "3306"),
+                getConfig().getString("database.database", "minecraft"),
+                getConfig().getString("database.username", "core"),
+                getConfig().getString("database.password", "CHANGE_ME"));
 
         List.of(
                 new Attack(),
@@ -59,16 +59,16 @@ public final class Core extends JavaPlugin {
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
 
         List.of(
-                new item(),
-                new iteminfo(),
-                new stats(),
-                new menu(),
-                new ap(),
-                new spawnmob(),
-                new loop(),
-                new displaytest(),
-                new dialog(),
-                new _class()).forEach(commands -> {
+                new ItemCommand(),
+                new ItemInfoCommand(),
+                new StatsCommand(),
+                new MenuCommand(),
+                new ApCommand(),
+                new SpawnMobCommand(),
+                new LoopCommand(),
+                new DisplayTestCommand(),
+                new DialogCommand(),
+                new ClassCommand()).forEach(commands -> {
                     PluginCommand pluginCommand = getCommand(commands.getCommand());
                     if (pluginCommand != null) {
                         pluginCommand.setExecutor((commandSender, command, s, args) -> {
@@ -92,7 +92,7 @@ public final class Core extends JavaPlugin {
         new HealthRegenTask().runTaskTimer(this, 0L, 20L);
         new StaminaTask().runTaskTimer(this, 0L, 4L); // Run every 4 ticks (0.2s)
         new StatUpdateTask().runTaskTimer(this, 0L, 10L);
-        new AutoSaveTask().runTaskTimerAsynchronously(this, 6000L, 6000L); // Save every 5 minutes
+        new AutoSaveTask().runTaskTimer(this, 6000L, 6000L); // Save every 5 minutes (snapshot on main thread, I/O async)
         // new CustomMobTask().runTaskTimer(this, 0L, 0L);
 
         // Load data for online players (in case of reload)

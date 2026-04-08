@@ -1,0 +1,7 @@
+database:
+  host: 127.0.0.1
+  port: 3306
+  database: minecraft
+  username: core
+  # Change this to your actual database password before deploying
+  password: CHANGE_ME

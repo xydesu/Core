@@ -19,7 +19,7 @@ public class DamageCalc {
     }
 
     public static DamageResult getDamage(Player player, ItemStack item, Entity target) {
-        return getDamage(player, item, target, false);
+        return getDamage(player, item, target, true);
     }
 
     public static DamageResult getDamage(Player player, ItemStack item, Entity target, boolean silent) {
@@ -72,12 +72,6 @@ public class DamageCalc {
         if (isCrit) {
             totalDamage *= 1.5;
         }
-
-        player.sendMessage("==========傷害資訊==========");
-        player.sendMessage("基礎傷害: " + damage);
-        player.sendMessage("類型: 遠程");
-        player.sendMessage("總傷害: " + totalDamage);
-        player.sendMessage("==============================");
 
         return new DamageResult(totalDamage, isCrit);
     }

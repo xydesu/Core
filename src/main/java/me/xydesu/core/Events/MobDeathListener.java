@@ -7,6 +7,7 @@ import me.xydesu.core.Utils.PDC;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -25,9 +26,9 @@ public class MobDeathListener implements Listener {
         LivingEntity entity = event.getEntity();
 
         if (CustomMob.isCustomMob(entity)) {
-            // Remove Custom Name
-            CustomMob.line.get(entity).remove();
-
+            // Remove Custom Name display
+            TextDisplay nameDisplay = CustomMob.removeNameDisplay(entity);
+            if (nameDisplay != null) nameDisplay.remove();
 
             // Disable vanilla EXP drop
             event.setDroppedExp(0);
@@ -42,14 +43,13 @@ public class MobDeathListener implements Listener {
                  }
             }
 
-            // Handle Custom Drops
+            // Handle Custom Drops and EXP via registered CustomMob
             String id = PDC.get(entity, Keys.ID, PersistentDataType.STRING);
-            if (id != null) {
-                CustomMob mob = CustomMob.get(id);
-                if (mob != null) {
-                    List<ItemStack> drops = mob.getDrops();
-                    event.getDrops().addAll(drops);
-                }
+            CustomMob mob = (id != null) ? CustomMob.get(id) : null;
+
+            if (mob != null) {
+                List<ItemStack> drops = mob.getDrops();
+                event.getDrops().addAll(drops);
             }
 
             if (killer != null) {
@@ -64,29 +64,21 @@ public class MobDeathListener implements Listener {
                         customPlayer.setCurrentHealth(newHealth);
                         
                         // Attack Speed Buff (+10% for 3s)
-                        customPlayer.tempAttackSpeedBonus = 0.10;
+                        customPlayer.setTempAttackSpeedBonus(0.10);
                         killer.sendMessage(Component.text("亡魂抽取！恢復生命並提升攻速！", NamedTextColor.GREEN));
                         
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-                                customPlayer.tempAttackSpeedBonus = 0;
+                                customPlayer.setTempAttackSpeedBonus(0);
                             }
                         }.runTaskLater(Core.getPlugin(), 60L); // 3 seconds
                     }
                 }
 
-                double exp = 0;
+                double exp = (mob != null) ? mob.getDroppedExp() : 0;
 
-                // Try to get EXP from registered CustomMob
-                if (id != null) {
-                    CustomMob mob = CustomMob.get(id);
-                    if (mob != null) {
-                        exp = mob.getDroppedExp();
-                    }
-                }
-
-                // Fallback if no ID or mob found (e.g. generic custom mob)
+                // Fallback if no registered mob found (e.g. generic custom mob)
                 if (exp == 0) {
                     int level = PDC.get(entity, Keys.LEVEL, PersistentDataType.INTEGER, 1);
                     exp = level * 10;

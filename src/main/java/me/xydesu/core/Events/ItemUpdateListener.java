@@ -54,7 +54,7 @@ public class ItemUpdateListener implements Listener {
 
         System.out.println("[Debug] Checking item: " + itemStack.getType());
 
-        for (Item item : Item.registeredItems) {
+        for (Item item : Item.getRegisteredItems()) {
             if (item.getMaterial() == itemStack.getType()) {
                 System.out.println("[Debug] Found registered custom item: " + item.getID());
                 ItemStack customItem = item.getItem();

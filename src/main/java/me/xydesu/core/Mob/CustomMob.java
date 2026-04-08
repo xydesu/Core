@@ -22,7 +22,7 @@ public abstract class CustomMob {
 
     public static List<CustomMob> registeredMobs = new ArrayList<>();
 
-    public static Map<LivingEntity, TextDisplay> line = new HashMap<>();
+    private static final Map<LivingEntity, TextDisplay> line = new HashMap<>();
 
     static {
         registeredMobs.addAll(List.of(
@@ -210,6 +210,13 @@ public abstract class CustomMob {
                 "<gray>" + String.valueOf(symbol).repeat(emptyCount);
     }
     
+    /**
+     * Removes and returns the name display entity for the given mob, or null if none exists.
+     */
+    public static TextDisplay removeNameDisplay(LivingEntity entity) {
+        return line.remove(entity);
+    }
+
     // Helper for manual setup (e.g. from command with custom args)
     public static void setCustomMob(LivingEntity entity, boolean isCustom) {
         PDC.set(entity, Keys.CUSTOM_MOB, PersistentDataType.BOOLEAN, isCustom);

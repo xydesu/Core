@@ -13,8 +13,8 @@ import java.util.*;
 
 public class SkillTriggerListener implements Listener {
 
-    // Map to store player's recent actions: UUID -> List of ClickType
-    private final Map<UUID, List<ClickType>> playerActions = new HashMap<>();
+    // Map to store player's recent actions: UUID -> Deque of ClickType
+    private final Map<UUID, ArrayDeque<ClickType>> playerActions = new HashMap<>();
     // Map to store the last action timestamp to expire combos
     private final Map<UUID, Long> lastActionTime = new HashMap<>();
 
@@ -42,8 +42,15 @@ public class SkillTriggerListener implements Listener {
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
-        playerActions.remove(event.getPlayer().getUniqueId());
-        lastActionTime.remove(event.getPlayer().getUniqueId());
+        UUID uuid = event.getPlayer().getUniqueId();
+        playerActions.remove(uuid);
+        lastActionTime.remove(uuid);
+
+        // Clean up class cooldowns to prevent memory leak
+        Player player = Player.get(event.getPlayer());
+        if (player.getPlayerClass() != null) {
+            player.getPlayerClass().clearCooldowns(uuid);
+        }
     }
 
     private void handleInteraction(org.bukkit.entity.Player bukkitPlayer, ClickType clickType) {
@@ -74,8 +81,8 @@ public class SkillTriggerListener implements Listener {
             }
         }
 
-        playerActions.putIfAbsent(uuid, new ArrayList<>());
-        List<ClickType> actions = playerActions.get(uuid); // Changed to store ClickType directly
+        playerActions.putIfAbsent(uuid, new ArrayDeque<>());
+        ArrayDeque<ClickType> actions = playerActions.get(uuid);
 
         if (actions.isEmpty()) {
             boolean isRanged = toolType == ToolType.BOW || toolType == ToolType.CROSSBOW;
@@ -87,7 +94,7 @@ public class SkillTriggerListener implements Listener {
             }
         }
 
-        actions.add(clickType);
+        actions.addLast(clickType);
         lastActionTime.put(uuid, currentTime);
 
         // Show Combo Title
@@ -104,11 +111,11 @@ public class SkillTriggerListener implements Listener {
                 net.kyori.adventure.text.Component.text(comboStr.toString())));
 
         if (actions.size() > 3) {
-            actions.remove(0);
+            actions.removeFirst(); // O(1) removal from front with ArrayDeque
         }
 
         if (actions.size() == 3) {
-            if (checkCombo(player, actions)) {
+            if (checkCombo(player, new ArrayList<>(actions))) {
                 playerActions.remove(uuid);
                 lastActionTime.remove(uuid);
             }
