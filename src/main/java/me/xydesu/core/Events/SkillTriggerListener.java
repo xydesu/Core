@@ -3,6 +3,7 @@ package me.xydesu.core.Events;
 import me.xydesu.core.Item.ToolType;
 import me.xydesu.core.Player.Class.ClassManager;
 import me.xydesu.core.Player.Player;
+import org.bukkit.Sound;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -133,37 +134,46 @@ public class SkillTriggerListener implements Listener {
         ClickType c2 = clicks.get(1);
         ClickType c3 = clicks.get(2);
 
+        org.bukkit.entity.Player p = player.getBukkitPlayer();
         if (isRanged) {
             if (c1 == ClickType.LEFT && c2 == ClickType.RIGHT && c3 == ClickType.LEFT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castSkill1(player);
                 return true;
             }
             if (c1 == ClickType.LEFT && c2 == ClickType.LEFT && c3 == ClickType.RIGHT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castSkill2(player);
                 return true;
             }
             if (c1 == ClickType.LEFT && c2 == ClickType.RIGHT && c3 == ClickType.RIGHT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castSkill3(player);
                 return true;
             }
             if (c1 == ClickType.LEFT && c2 == ClickType.LEFT && c3 == ClickType.LEFT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castUltimate(player);
                 return true;
             }
         } else {
             if (c1 == ClickType.RIGHT && c2 == ClickType.LEFT && c3 == ClickType.RIGHT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castSkill1(player);
                 return true;
             }
             if (c1 == ClickType.RIGHT && c2 == ClickType.RIGHT && c3 == ClickType.LEFT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castSkill2(player);
                 return true;
             }
             if (c1 == ClickType.RIGHT && c2 == ClickType.LEFT && c3 == ClickType.LEFT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castSkill3(player);
                 return true;
             }
             if (c1 == ClickType.RIGHT && c2 == ClickType.RIGHT && c3 == ClickType.RIGHT) {
+                p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1.5f);
                 player.getPlayerClass().castUltimate(player);
                 return true;
             }
