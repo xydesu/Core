@@ -45,6 +45,9 @@ public class Keys {
     public static final NamespacedKey ABILITY = new NamespacedKey(Core.getPlugin(), "ability");
     public static final NamespacedKey ENCHANTS = new NamespacedKey(Core.getPlugin(), "enchants");
 
+    // Set Bonus Keys
+    public static final NamespacedKey SET_ID = new NamespacedKey(Core.getPlugin(), "set_id");
+
     // Mob Keys
     public static final NamespacedKey CUSTOM_MOB = new NamespacedKey(Core.getPlugin(), "custom_mob");
     public static final NamespacedKey LEVEL = new NamespacedKey(Core.getPlugin(), "level");

@@ -115,6 +115,19 @@ public class MainMenu extends GUI {
         PDC.set(attrMeta, Keys.ID, PersistentDataType.STRING, "ATTRIBUTES");
         attrItem.setItemMeta(attrMeta);
         getInventory().setItem(23, attrItem);
+
+        // Reforge Button (重鑄台 - Slot 25)
+        ItemStack reforgeItem = new ItemStack(Material.ANVIL);
+        ItemMeta reforgeMeta = reforgeItem.getItemMeta();
+        reforgeMeta.displayName(Component.text("⚒ 重鑄台", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, false).decoration(TextDecoration.BOLD, true));
+        List<Component> reforgeLore = new ArrayList<>();
+        reforgeLore.add(Component.text("點擊開啟重鑄介面。", NamedTextColor.GRAY).decoration(TextDecoration.ITALIC, true));
+        reforgeLore.add(Component.empty());
+        reforgeLore.add(Component.text("消耗材料重新隨機物品品質。", NamedTextColor.YELLOW).decoration(TextDecoration.ITALIC, false));
+        reforgeMeta.lore(reforgeLore);
+        PDC.set(reforgeMeta, Keys.ID, PersistentDataType.STRING, "REFORGE");
+        reforgeItem.setItemMeta(reforgeMeta);
+        getInventory().setItem(25, reforgeItem);
     }
 
     @Override
@@ -134,6 +147,9 @@ public class MainMenu extends GUI {
         } else if (id.equals("ATTRIBUTES")) {
             player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
             new AttributeGUI(player).open(player);
+        } else if (id.equals("REFORGE")) {
+            player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1, 1);
+            new ReforgeMenu(player).open(player);
         }
     }
 }

@@ -10,6 +10,7 @@ import me.xydesu.core.Events.MobDeathListener;
 import me.xydesu.core.Events.PlayerDataListener;
 import me.xydesu.core.Events.SkillTriggerListener;
 import me.xydesu.core.Events.StaminaListener;
+import me.xydesu.core.Events.ConsumableListener;
 import me.xydesu.core.GUI.GUIListener;
 import me.xydesu.core.Tasks.*;
 import me.xydesu.core.Database.DatabaseManager;
@@ -55,7 +56,8 @@ public final class Core extends JavaPlugin {
                 new MobDeathListener(),
                 new PlayerDataListener(),
                 new SkillTriggerListener(),
-                new StaminaListener())
+                new StaminaListener(),
+                new ConsumableListener())
                 .forEach(listener -> getServer().getPluginManager().registerEvents(listener, this));
 
         List.of(
@@ -68,7 +70,8 @@ public final class Core extends JavaPlugin {
                 new LoopCommand(),
                 new DisplayTestCommand(),
                 new DialogCommand(),
-                new ClassCommand()).forEach(commands -> {
+                new ClassCommand(),
+                new PartyCommand()).forEach(commands -> {
                     PluginCommand pluginCommand = getCommand(commands.getCommand());
                     if (pluginCommand != null) {
                         pluginCommand.setExecutor((commandSender, command, s, args) -> {
@@ -93,7 +96,7 @@ public final class Core extends JavaPlugin {
         new StaminaTask().runTaskTimer(this, 0L, 4L); // Run every 4 ticks (0.2s)
         new StatUpdateTask().runTaskTimer(this, 0L, 10L);
         new AutoSaveTask().runTaskTimer(this, 6000L, 6000L); // Save every 5 minutes (snapshot on main thread, I/O async)
-        // new CustomMobTask().runTaskTimer(this, 0L, 0L);
+        new CustomMobTask().runTaskTimer(this, 0L, 20L); // Run every second for name display + region spawning
 
         // Load data for online players (in case of reload)
         for (Player player : getServer().getOnlinePlayers()) {

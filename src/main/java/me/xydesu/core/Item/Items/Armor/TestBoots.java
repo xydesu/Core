@@ -41,4 +41,9 @@ public class TestBoots extends Item {
     public Rarity getRarity() {
         return Rarity.RARE;
     }
+
+    @Override
+    public String getSetID() {
+        return "TEST_SET";
+    }
 }

@@ -5,6 +5,7 @@ import me.xydesu.core.Mob.CustomMob;
 import me.xydesu.core.Utils.DamageCalc;
 import me.xydesu.core.Utils.Keys;
 import me.xydesu.core.Utils.PDC;
+import me.xydesu.core.Player.Party.PartyManager;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -32,6 +33,14 @@ public class Attack implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player player) {
+            // Prevent friendly fire between party members
+            if (event.getEntity() instanceof Player target) {
+                if (PartyManager.areInSameParty(player.getUniqueId(), target.getUniqueId())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
             ItemStack item = player.getInventory().getItemInMainHand();
 
             if (!me.xydesu.core.Item.Item.canUse(me.xydesu.core.Player.Player.get(player), item)) {
@@ -75,6 +84,14 @@ public class Attack implements Listener {
 
             spawnDamageIndicator(event.getEntity(), damage, isCrit);
         } else if (event.getDamager() instanceof AbstractArrow arrow && arrow.getShooter() instanceof Player player) {
+            // Prevent friendly fire between party members (arrow)
+            if (event.getEntity() instanceof Player target) {
+                if (PartyManager.areInSameParty(player.getUniqueId(), target.getUniqueId())) {
+                    event.setCancelled(true);
+                    return;
+                }
+            }
+
             ItemStack item = player.getInventory().getItemInMainHand();
 
             if (!me.xydesu.core.Item.Item.canUse(me.xydesu.core.Player.Player.get(player), item)) {
