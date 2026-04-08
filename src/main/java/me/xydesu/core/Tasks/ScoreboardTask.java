@@ -62,6 +62,9 @@ public class ScoreboardTask extends BukkitRunnable {
     // 4-frame spinner shown before the player name
     private static final String[] SPIN = {"\u25d0", "\u25d3", "\u25d1", "\u25d2"};
 
+    /** Maximum characters shown for a party member's name before truncating with an ellipsis. */
+    private static final int MAX_PARTY_NAME_LENGTH = 6;
+
     private int tick = 0;
     private static final Map<UUID, Scoreboard> boards = new HashMap<>();
 
@@ -215,7 +218,7 @@ public class ScoreboardTask extends BukkitRunnable {
 
         String icon  = cp.getPlayerClass() != null ? classIcon(cp.getPlayerClass().className()) : "\u00a77\u2746";
         String color = classColor(cp);
-        String name  = mp.getName().length() > 6 ? mp.getName().substring(0, 6) + "\u2026" : mp.getName();
+        String name  = mp.getName().length() > MAX_PARTY_NAME_LENGTH ? mp.getName().substring(0, MAX_PARTY_NAME_LENGTH) + "\u2026" : mp.getName();
         double h = cp.getCurrentHealth(), mh = cp.getMaxHealth();
         boolean crit = mh > 0 && h / mh < 0.3;
         String bar = (crit && flash)
