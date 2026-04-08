@@ -6,14 +6,34 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
+/**
+ * Updates the tab-list header/footer and each player's list-name every 10 ticks (2×/s).
+ *
+ * Animation layers:
+ *   • Header title   – 6-frame gradient shimmer (§6/§e/§f cycling), 1 s per frame
+ *   • Header tip     – 5 rotating gameplay tips, one shown every 5 s
+ *   • Footer border  – alternates §6◈ ↔ §e◆ every 1 s
+ *   • Player name    – class-coloured bold level badge + white name
+ */
 public class TablistTask extends BukkitRunnable {
 
-    // Header title cycles through these colour gradients (§6=gold, §e=yellow, §f=white)
-    private static final String[][] TITLE_FRAMES = {
-        { "§6§l✦ §e§lCoreRPG §6§l✦", "§7§o⁌ 傳奇冒險的世界 ⁍" },
-        { "§e§l✧ §f§lCoreRPG §e§l✧", "§7§o⁌ 傳奇冒險的世界 ⁍" },
-        { "§6§l✦ §e§lCoreRPG §6§l✦", "§8§o⁌ 傳奇冒險的世界 ⁍" },
-        { "§e§l✧ §f§lCoreRPG §e§l✧", "§8§o⁌ 傳奇冒險的世界 ⁍" }
+    // Server title cycles through 6 colour combinations (1 frame per second = every 2 ticks at 10-tick interval)
+    private static final String[] TITLE = {
+        "§6§l✦ §e§lCoreRPG §6§l✦",
+        "§e§l✧ §f§lCoreRPG §e§l✧",
+        "§f§l✦ §6§lCoreRPG §f§l✦",
+        "§e§l✧ §6§lCoreRPG §e§l✧",
+        "§6§l✦ §f§lCoreRPG §6§l✦",
+        "§e§l✧ §e§lCoreRPG §e§l✧",
+    };
+
+    // Rotating tips – one shown every 5 s (every 10 ticks at 10-tick interval)
+    private static final String[] TIPS = {
+        "§7§o  使用 §e/menu §7§o開啟主選單  ",
+        "§7§o  輸入 §e/class §7§o選擇你的職業  ",
+        "§7§o  擊倒怪物以獲得 §e經驗值  ",
+        "§7§o  使用 §e/party §7§o與朋友組隊冒險  ",
+        "§7§o  強化裝備以提升戰鬥力  ",
     };
 
     private int tick = 0;
@@ -21,55 +41,58 @@ public class TablistTask extends BukkitRunnable {
     @Override
     public void run() {
         tick++;
-        int frame  = tick % TITLE_FRAMES.length;
+        // Title frame changes every 2 ticks = 1 s
+        int titleFrame = (tick / 2) % TITLE.length;
+        // Tip changes every 10 ticks = 5 s
+        int tipFrame   = (tick / 10) % TIPS.length;
+        // Border character alternates every 2 ticks = 1 s
+        boolean altBorder = (tick / 2) % 2 == 0;
         int online = Bukkit.getOnlinePlayers().size();
 
         for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) {
-            Player cp = Player.get(p);
-            updateTablist(p, cp, frame, online);
+            updateTablist(p, Player.get(p), titleFrame, tipFrame, altBorder, online);
         }
     }
 
-    private void updateTablist(org.bukkit.entity.Player p, Player cp, int frame, int online) {
+    private void updateTablist(org.bukkit.entity.Player p, Player cp,
+                               int titleFrame, int tipFrame, boolean altBorder, int online) {
         String classColor = classColor(cp);
-        String className  = cp.getPlayerClass() != null
-                ? cp.getPlayerClass().classDisplay() : "§7無職業";
-        int lv  = cp.getLevel();
-        int hp  = (int) cp.getCurrentHealth(), mhp = (int) cp.getMaxHealth();
-        int mp  = (int) cp.getCurrentMana(),   mmp = (int) cp.getMaxMana();
+        String className  = cp.getPlayerClass() != null ? cp.getPlayerClass().classDisplay() : "§7無職業";
+        int    lv  = cp.getLevel();
+        int    hp  = (int) cp.getCurrentHealth(), mhp = (int) cp.getMaxHealth();
+        int    mp  = (int) cp.getCurrentMana(),   mmp = (int) cp.getMaxMana();
 
         String hpColor = mhp > 0 && (double) hp / mhp >= 0.6 ? "§a"
                 : mhp > 0 && (double) hp / mhp >= 0.3 ? "§6" : "§c";
 
+        // Animated footer border
+        String bChar  = altBorder ? "§6◈" : "§e◆";
+        String border = bChar + "§7──────────────────────" + bChar;
+
         // ── Header ────────────────────────────────────────────────────────────
-        String titleLine = TITLE_FRAMES[frame][0];
-        String subLine   = TITLE_FRAMES[frame][1];
         Component header = legacy(
                 "\n" +
-                "  " + titleLine + "  \n" +
-                "  " + subLine   + "  \n"
+                "  " + TITLE[titleFrame] + "  \n" +
+                TIPS[tipFrame] + "\n"
         );
 
         // ── Footer ────────────────────────────────────────────────────────────
         Component footer = legacy(
                 "\n" +
-                "§8◈§7──────────────────────§8◈\n" +
+                border + "\n" +
                 "§f" + p.getName()
                         + " §8│ " + classColor + className
                         + " §8│ §aLv.§f" + lv + "\n" +
                 hpColor + "❤ §f" + hp + "§7/§f" + mhp
                         + "  §b✎ §f" + mp + "§7/§f" + mmp + "\n" +
                 "§7在線玩家: §f" + online + "\n" +
-                "§8◈§7──────────────────────§8◈\n"
+                border + "\n"
         );
 
         p.sendPlayerListHeaderAndFooter(header, footer);
 
-        // ── Player list name (shown next to the ping icon in tab) ─────────────
-        Component listName = legacy(
-                classColor + "§l[" + lv + "]§r §f" + p.getName()
-        );
-        p.playerListName(listName);
+        // ── Tab list player name: class-coloured bold level badge ─────────────
+        p.playerListName(legacy(classColor + "§l[" + lv + "]§r §f" + p.getName()));
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
@@ -92,3 +115,4 @@ public class TablistTask extends BukkitRunnable {
         return LegacyComponentSerializer.legacySection().deserialize(s);
     }
 }
+

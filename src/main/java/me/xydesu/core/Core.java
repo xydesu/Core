@@ -84,8 +84,8 @@ public final class Core extends JavaPlugin {
                 });
 
         new ActionBarTask().runTaskTimer(this, 0L, 20L);
-        new ScoreboardTask().runTaskTimer(this, 0L, 20L);
-        new TablistTask().runTaskTimer(this, 0L, 20L);
+        new ScoreboardTask().runTaskTimer(this, 0L, 5L);  // 4×/s for fluid animation
+        new TablistTask().runTaskTimer(this, 0L, 10L);    // 2×/s for tip cycling + border
 
         /*
          * PlayerHudTask hudTask = new PlayerHudTask();
