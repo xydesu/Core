@@ -84,6 +84,8 @@ public final class Core extends JavaPlugin {
                 });
 
         new ActionBarTask().runTaskTimer(this, 0L, 20L);
+        new ScoreboardTask().runTaskTimer(this, 0L, 20L);
+        new TablistTask().runTaskTimer(this, 0L, 20L);
 
         /*
          * PlayerHudTask hudTask = new PlayerHudTask();
