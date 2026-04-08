@@ -1,5 +1,6 @@
 package me.xydesu.core.Player;
 
+import me.xydesu.core.Item.SetBonusManager;
 import me.xydesu.core.Player.Class.ClassManager;
 import me.xydesu.core.Utils.Keys;
 import me.xydesu.core.Utils.PDC;
@@ -349,6 +350,35 @@ public class Player {
             // Assuming we might add stamina stats to items later, but for now just base + vitality
         }
 
+        // Set Bonus detection: count equipped pieces per set ID
+        List<ItemStack> armorSlots = new ArrayList<>();
+        if (p.getInventory().getHelmet() != null) armorSlots.add(p.getInventory().getHelmet());
+        if (p.getInventory().getChestplate() != null) armorSlots.add(p.getInventory().getChestplate());
+        if (p.getInventory().getLeggings() != null) armorSlots.add(p.getInventory().getLeggings());
+        if (p.getInventory().getBoots() != null) armorSlots.add(p.getInventory().getBoots());
+
+        Map<String, Integer> setPieceCounts = new HashMap<>();
+        for (ItemStack armorItem : armorSlots) {
+            if (armorItem == null || !armorItem.hasItemMeta()) continue;
+            String setId = PDC.get(armorItem, Keys.SET_ID, PersistentDataType.STRING, null);
+            if (setId != null) {
+                setPieceCounts.merge(setId, 1, Integer::sum);
+            }
+        }
+
+        for (Map.Entry<String, Integer> entry : setPieceCounts.entrySet()) {
+            for (SetBonusManager.SetBonus bonus : SetBonusManager.getApplicableBonuses(entry.getKey(), entry.getValue())) {
+                strength += bonus.strength;
+                defense += bonus.defense;
+                critChance += bonus.critChance;
+                critDamage += bonus.critDamage;
+                maxHealth += bonus.maxHealth;
+                healthRegen += bonus.healthRegen;
+                maxMana += bonus.maxMana;
+                manaRegen += bonus.manaRegen;
+            }
+        }
+
         setStat("strength", strength);
         setStat("defense", defense);
         setStat("crit_chance", critChance);
@@ -359,7 +389,6 @@ public class Player {
         setStat("mana_regen", manaRegen);
         
         this.maxStamina = maxStamina;
-
         // Apply vanilla attributes
         // We keep vanilla MAX_HEALTH at 20 to work with the visual health scaling in HealthListener
         if (p.getAttribute(Attribute.MAX_HEALTH) != null)

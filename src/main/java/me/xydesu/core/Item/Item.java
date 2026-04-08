@@ -177,6 +177,14 @@ public abstract class Item {
     public void onInteract(PlayerInteractEvent event) {
     }
 
+    /**
+     * Returns the set ID this item belongs to, or {@code null} if it is not
+     * part of any set.  Override in subclasses to declare set membership.
+     */
+    public String getSetID() {
+        return null;
+    }
+
     public ItemStack getItem() {
         ItemStack item = new ItemStack(getMaterial());
         ItemMeta meta = item.getItemMeta();
@@ -266,6 +274,9 @@ public abstract class Item {
             PDC.set(meta, Keys.RANGE, PersistentDataType.DOUBLE, getRange());
             PDC.set(meta, Keys.AOE, PersistentDataType.BOOLEAN, hasAOE());
             PDC.set(meta, Keys.RARITY, PersistentDataType.STRING, getRarity().name());
+            if (getSetID() != null) {
+                PDC.set(meta, Keys.SET_ID, PersistentDataType.STRING, getSetID());
+            }
 
             meta.lore(buildLore(this, meta));
             meta.setUnbreakable(isUnbreakable());
@@ -765,6 +776,88 @@ public abstract class Item {
             return false; // logic: weapon requires class match, no class = mismatch
 
         return player.getPlayerClass().getWeaponType() == type;
+    }
+
+    /**
+     * Re-rolls all quality values on the given item in-place, consuming one
+     * item from the provided material stack.
+     *
+     * @param target   the item to reforge (must be a registered custom item)
+     * @param material the material stack used as the reforge cost (one is consumed)
+     * @return {@code true} if the reforge was successful, {@code false} if the
+     *         item is not reforgeable or either argument is null/air
+     */
+    public static boolean reforge(ItemStack target, ItemStack material) {
+        if (target == null || target.getType().isAir()) return false;
+        if (material == null || material.getType().isAir()) return false;
+
+        String id = PDC.get(target, Keys.ID, PersistentDataType.STRING, null);
+        if (id == null || id.startsWith("VANILLA_")) return false;
+
+        Item template = null;
+        for (Item registered : registeredItems) {
+            if (registered.getID().equals(id)) {
+                template = registered;
+                break;
+            }
+        }
+        if (template == null) return false;
+
+        ItemMeta meta = target.getItemMeta();
+        if (meta == null) return false;
+
+        double variance = template.getStatVariance();
+        double overallQuality = Math.random();
+        double dev = 0.15;
+
+        double qDamage = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qStrength = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qDefense = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qCritChance = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qCritDamage = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qMaxHealth = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qHealthRegen = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qMaxMana = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qManaRegen = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qAttackSpeed = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qElementalDamage = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qMovementSpeed = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+        double qLifeSteal = Math.max(0, Math.min(1, overallQuality + (Math.random() * 2 - 1) * dev));
+
+        PDC.set(meta, Keys.QUALITY, PersistentDataType.DOUBLE, overallQuality);
+        PDC.set(meta, Keys.QUALITY_DAMAGE, PersistentDataType.DOUBLE, qDamage);
+        PDC.set(meta, Keys.QUALITY_STRENGTH, PersistentDataType.DOUBLE, qStrength);
+        PDC.set(meta, Keys.QUALITY_DEFENSE, PersistentDataType.DOUBLE, qDefense);
+        PDC.set(meta, Keys.QUALITY_CRIT_CHANCE, PersistentDataType.DOUBLE, qCritChance);
+        PDC.set(meta, Keys.QUALITY_CRIT_DAMAGE, PersistentDataType.DOUBLE, qCritDamage);
+        PDC.set(meta, Keys.QUALITY_MAX_HEALTH, PersistentDataType.DOUBLE, qMaxHealth);
+        PDC.set(meta, Keys.QUALITY_HEALTH_REGEN, PersistentDataType.DOUBLE, qHealthRegen);
+        PDC.set(meta, Keys.QUALITY_MAX_MANA, PersistentDataType.DOUBLE, qMaxMana);
+        PDC.set(meta, Keys.QUALITY_MANA_REGEN, PersistentDataType.DOUBLE, qManaRegen);
+        PDC.set(meta, Keys.QUALITY_ATTACK_SPEED, PersistentDataType.DOUBLE, qAttackSpeed);
+        PDC.set(meta, Keys.QUALITY_ELEMENTAL_DAMAGE, PersistentDataType.DOUBLE, qElementalDamage);
+        PDC.set(meta, Keys.QUALITY_MOVEMENT_SPEED, PersistentDataType.DOUBLE, qMovementSpeed);
+        PDC.set(meta, Keys.QUALITY_LIFE_STEAL, PersistentDataType.DOUBLE, qLifeSteal);
+
+        PDC.set(meta, Keys.DAMAGE, PersistentDataType.DOUBLE, template.getDamage() * (1.0 + (qDamage - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.STRENGTH, PersistentDataType.DOUBLE, template.getStrength() * (1.0 + (qStrength - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.DEFENSE, PersistentDataType.DOUBLE, template.getDefense() * (1.0 + (qDefense - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.CRIT_CHANCE, PersistentDataType.DOUBLE, template.getCritChance() * (1.0 + (qCritChance - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.CRIT_DAMAGE, PersistentDataType.DOUBLE, template.getCritDamage() * (1.0 + (qCritDamage - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.MAX_HEALTH, PersistentDataType.DOUBLE, template.getMaxHealth() * (1.0 + (qMaxHealth - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.HEALTH_REGEN, PersistentDataType.DOUBLE, template.getHealthRegen() * (1.0 + (qHealthRegen - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.MAX_MANA, PersistentDataType.DOUBLE, template.getMaxMana() * (1.0 + (qMaxMana - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.MANA_REGEN, PersistentDataType.DOUBLE, template.getManaRegen() * (1.0 + (qManaRegen - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.ATTACK_SPEED, PersistentDataType.DOUBLE, template.getAttackSpeed() * (1.0 + (qAttackSpeed - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.ELEMENTAL_DAMAGE, PersistentDataType.DOUBLE, template.getElementalDamage() * (1.0 + (qElementalDamage - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.MOVEMENT_SPEED, PersistentDataType.DOUBLE, template.getMovementSpeed() * (1.0 + (qMovementSpeed - 0.5) * 2 * variance));
+        PDC.set(meta, Keys.LIFE_STEAL, PersistentDataType.DOUBLE, template.getLifeSteal() * (1.0 + (qLifeSteal - 0.5) * 2 * variance));
+
+        meta.lore(buildLore(template, meta));
+        target.setItemMeta(meta);
+
+        material.setAmount(material.getAmount() - 1);
+        return true;
     }
 
 }

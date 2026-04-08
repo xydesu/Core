@@ -1,6 +1,7 @@
 package me.xydesu.core.Events;
 
 import me.xydesu.core.Core;
+import me.xydesu.core.Player.Party.PartyManager;
 import me.xydesu.core.Player.Player;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -38,5 +39,6 @@ public class PlayerDataListener implements Listener {
         Player player = Player.get(event.getPlayer());
         Bukkit.getScheduler().runTaskAsynchronously(Core.getPlugin(),
                 () -> Core.getDatabaseManager().savePlayer(player));
+        PartyManager.handleDisconnect(event.getPlayer().getUniqueId());
     }
 }

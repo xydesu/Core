@@ -24,3 +24,5 @@ commands:
     usage: /<command>
   class:
     usage: /<command>
+  party:
+    usage: /<command> <invite|accept|kick|leave|disband|list>
