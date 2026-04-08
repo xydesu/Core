@@ -16,10 +16,10 @@ public class StaminaTask extends BukkitRunnable {
             
             if (bukkitPlayer.isSprinting()) {
                 // Consume stamina
-                // Consume 0.5 stamina every 4 ticks (2.5 per second)
-                // With 20 base stamina, that's 8 seconds of sprinting.
+                // Consume 0.25 stamina every 4 ticks (1.25 per second)
+                // With 20 base stamina, that's 16 seconds of sprinting.
                 // With vitality bonuses, it will be longer.
-                double consumption = 0.5; 
+                double consumption = 0.25; 
                 
                 currentStamina -= consumption;
                 if (currentStamina <= 0) {
