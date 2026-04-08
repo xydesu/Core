@@ -4,6 +4,10 @@ import me.xydesu.core.Item.SetBonusManager;
 import me.xydesu.core.Player.Class.ClassManager;
 import me.xydesu.core.Utils.Keys;
 import me.xydesu.core.Utils.PDC;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.inventory.ItemStack;
@@ -219,7 +223,7 @@ public class Player {
             this.exp -= required;
             this.level++;
             this.attributePoints += 5; // Add 5 attribute points per level
-            // TODO: Add level up effects/rewards here
+            sendLevelUpTip();
             if (this.level >= MAX_LEVEL) {
                 this.level = MAX_LEVEL;
                 this.exp = 0;
@@ -227,6 +231,18 @@ public class Player {
             }
             required = getRequiredExp();
         }
+    }
+
+    private void sendLevelUpTip() {
+        org.bukkit.entity.Player p = getBukkitPlayer();
+        if (p == null) return;
+        Component title = Component.text("⬆ 等級提升！", NamedTextColor.GOLD)
+                .decoration(TextDecoration.BOLD, true);
+        Component subtitle = Component.text("現在等級：" + this.level + "　獲得 5 點屬性點", NamedTextColor.YELLOW)
+                .decoration(TextDecoration.BOLD, false);
+        p.showTitle(Title.title(title, subtitle));
+        p.sendMessage(Component.text("[升級] ", NamedTextColor.GOLD)
+                .append(Component.text("你升到了 " + this.level + " 級！獲得 5 點屬性點，可在屬性選單中分配。", NamedTextColor.YELLOW)));
     }
 
     public double getRequiredExp() {
