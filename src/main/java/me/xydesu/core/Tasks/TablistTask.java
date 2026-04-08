@@ -4,7 +4,13 @@ import me.xydesu.core.Player.Player;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * Updates the tab-list header/footer and each player's list-name every 10 ticks (2×/s).
@@ -14,8 +20,16 @@ import org.bukkit.scheduler.BukkitRunnable;
  *   • Header tip     – 5 rotating gameplay tips, one shown every 5 s
  *   • Footer border  – alternates §6◈ ↔ §e◆ every 1 s
  *   • Player name    – class-coloured bold level badge + white name
+ *
+ * Sorting:
+ *   Players are sorted level-descending then name-ascending by assigning each player
+ *   to a Team named "s{000-099}" on the viewer's personal scoreboard.  The Minecraft
+ *   client renders tab-list entries in alphabetical team-name order, so "s000" (highest
+ *   level) always appears above "s099" (level 1).
  */
 public class TablistTask extends BukkitRunnable {
+
+    private static final int MAX_LEVEL = 100;
 
     // Server title cycles through 6 colour combinations (1 frame per second = every 2 ticks at 10-tick interval)
     private static final String[] TITLE = {
@@ -47,10 +61,21 @@ public class TablistTask extends BukkitRunnable {
         int tipFrame   = (tick / 10) % TIPS.length;
         // Border character alternates every 2 ticks = 1 s
         boolean altBorder = (tick / 2) % 2 == 0;
-        int online = Bukkit.getOnlinePlayers().size();
 
-        for (org.bukkit.entity.Player p : Bukkit.getOnlinePlayers()) {
-            updateTablist(p, Player.get(p), titleFrame, tipFrame, altBorder, online);
+        // Sort players: level descending, then name ascending
+        List<org.bukkit.entity.Player> sorted = new ArrayList<>(Bukkit.getOnlinePlayers());
+        sorted.sort(Comparator
+                .comparingInt((org.bukkit.entity.Player p) -> {
+                    Player cp = Player.get(p);
+                    return -(cp != null ? cp.getLevel() : 0);
+                })
+                .thenComparing(org.bukkit.entity.Player::getName));
+
+        for (org.bukkit.entity.Player p : sorted) {
+            Player cp = Player.get(p);
+            if (cp == null) continue;
+            updateTablist(p, cp, titleFrame, tipFrame, altBorder, sorted.size());
+            updateSortTeams(p, sorted);
         }
     }
 
@@ -93,6 +118,36 @@ public class TablistTask extends BukkitRunnable {
 
         // ── Tab list player name: class-coloured bold level badge ─────────────
         p.playerListName(legacy(classColor + "§l[" + lv + "]§r §f" + p.getName()));
+    }
+
+    /**
+     * Assigns every online player to a sort team on {@code viewer}'s personal scoreboard.
+     * Team names follow the pattern {@code "s000"} (highest level) → {@code "s099"} (level 1),
+     * causing the Minecraft client to render the tab list in descending-level order.
+     * Players at the same level are sorted alphabetically by name within their shared team.
+     */
+    private static void updateSortTeams(org.bukkit.entity.Player viewer,
+                                        List<org.bukkit.entity.Player> allPlayers) {
+        Scoreboard sb = ScoreboardTask.getBoard(viewer.getUniqueId());
+        if (sb == null) return;
+
+        for (org.bukkit.entity.Player target : allPlayers) {
+            Player cp = Player.get(target);
+            if (cp == null) continue;
+
+            // Pad to 3 digits so lexicographic order equals numeric order;
+            // subtract from MAX_LEVEL so higher levels sort first.
+            String teamName = "s" + String.format("%03d", MAX_LEVEL - cp.getLevel());
+            Team team = sb.getTeam(teamName);
+            if (team == null) team = sb.registerNewTeam(teamName);
+
+            // Only mutate membership when the player is in the wrong team
+            Team current = sb.getEntryTeam(target.getName());
+            if (current == null || !current.getName().equals(teamName)) {
+                if (current != null) current.removeEntry(target.getName());
+                team.addEntry(target.getName());
+            }
+        }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────

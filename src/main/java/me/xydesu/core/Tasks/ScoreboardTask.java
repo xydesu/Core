@@ -257,6 +257,11 @@ public class ScoreboardTask extends BukkitRunnable {
         return LegacyComponentSerializer.legacySection().deserialize(s);
     }
 
+    /** Returns the personal sidebar scoreboard for the given player, or {@code null} if not yet created. */
+    public static Scoreboard getBoard(UUID uuid) {
+        return boards.get(uuid);
+    }
+
     /** Call on player quit to release the board reference and easing state. */
     public static void remove(UUID uuid) {
         boards.remove(uuid);
