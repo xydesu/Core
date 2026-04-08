@@ -54,6 +54,14 @@ public class ScoreboardTask extends BukkitRunnable {
     private int tick = 0;
     private static final Map<UUID, Scoreboard> boards = new HashMap<>();
 
+    // Per-player eased display values – smoothly slide toward the real value each tick
+    private static final Map<UUID, Double> easedHp = new HashMap<>();
+    private static final Map<UUID, Double> easedMp = new HashMap<>();
+    private static final Map<UUID, Double> easedSt = new HashMap<>();
+
+    /** Easing factor: 25% of the remaining gap is closed each tick (≈ 4×/s). */
+    private static final double EASE = 0.25;
+
     @Override
     public void run() {
         tick++;
@@ -73,6 +81,8 @@ public class ScoreboardTask extends BukkitRunnable {
 
     private void updateBoard(org.bukkit.entity.Player p, Player cp,
                              int titleFrame, int spinFrame, int divPos, boolean flash) {
+        if (cp == null) return;
+
         // ── Create board once per player ──────────────────────────────────────
         if (!boards.containsKey(p.getUniqueId())) {
             Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
@@ -111,6 +121,12 @@ public class ScoreboardTask extends BukkitRunnable {
         boolean critHp = mhp > 0 && hp / mhp < 0.3;
         String  hpFill = hpFill(hp, mhp);
 
+        // ── Ease displayed bar values toward real values ───────────────────────
+        UUID   uid    = p.getUniqueId();
+        double dHp = easedHp.merge(uid, hp,  (old, real) -> old + (real - old) * EASE);
+        double dMp = easedMp.merge(uid, mp,  (old, real) -> old + (real - old) * EASE);
+        double dSt = easedSt.merge(uid, st,  (old, real) -> old + (real - old) * EASE);
+
         // ── Dynamic outer border (pulses red when HP critical) ────────────────
         String border = critHp
                 ? (flash ? "§c§l! §4────────────§c§l !" : "§4§l! §c────────────§4§l !")
@@ -122,7 +138,7 @@ public class ScoreboardTask extends BukkitRunnable {
         // ── HP line: flash solid dark-red bar when critical ───────────────────
         String hpLine = (critHp && flash)
                 ? "§c❤ §4§l" + "█".repeat(7) + "§r §c" + (int) hp + "§7/§f" + (int) mhp
-                : hpFill + "❤ " + miniBar(hp, mhp, 7, hpFill) + " §f" + (int) hp + "§7/§f" + (int) mhp;
+                : hpFill + "❤ " + miniBar(dHp, mhp, 7, hpFill) + " §f" + (int) hp + "§7/§f" + (int) mhp;
 
         // ── AP alert: pulses gold ↔ green ─────────────────────────────────────
         String apLine = ap > 0
@@ -137,8 +153,8 @@ public class ScoreboardTask extends BukkitRunnable {
             "§7EXP " + expBar(expPct),                                          //  3 exp bar
             divider,                                                             //  4 travelling divider
             hpLine,                                                              //  5 HP
-            "§b✎ "  + miniBar(mp, mmp, 7, "§b") + " §f" + (int) mp + "§7/§f" + (int) mmp, // 6 MP
-            "§a⚡ " + miniBar(st, mst, 7, "§a") + " §f" + (int) st + "§7/§f" + (int) mst, // 7 Stamina
+            "§b✎ "  + miniBar(dMp, mmp, 7, "§b") + " §f" + (int) mp + "§7/§f" + (int) mmp, // 6 MP
+            "§a⚡ " + miniBar(dSt, mst, 7, "§a") + " §f" + (int) st + "§7/§f" + (int) mst, // 7 Stamina
             divider,                                                             //  8 travelling divider
             "§6⚔ §f" + str + "  §9♦ §f" + def,                               //  9 STR / DEF
             String.format("§eCrit §f%.0f%% §8│ §6×%.1f", crit, critMult),     // 10 crit stats
@@ -241,8 +257,26 @@ public class ScoreboardTask extends BukkitRunnable {
         return LegacyComponentSerializer.legacySection().deserialize(s);
     }
 
-    /** Call on player quit to release the board reference. */
+    /** Call on player quit to release the board reference and easing state. */
     public static void remove(UUID uuid) {
         boards.remove(uuid);
+        easedHp.remove(uuid);
+        easedMp.remove(uuid);
+        easedSt.remove(uuid);
+    }
+
+    /**
+     * Resets every online player to the server's main scoreboard and clears all state.
+     * Should be called from {@code Core#onDisable()}.
+     */
+    public static void clearAll() {
+        for (UUID uuid : boards.keySet()) {
+            org.bukkit.entity.Player p = Bukkit.getPlayer(uuid);
+            if (p != null) p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        }
+        boards.clear();
+        easedHp.clear();
+        easedMp.clear();
+        easedSt.clear();
     }
 }

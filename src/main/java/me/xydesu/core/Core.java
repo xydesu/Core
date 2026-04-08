@@ -110,6 +110,7 @@ public final class Core extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        ScoreboardTask.clearAll();
         if (databaseManager != null) {
             // Save all online players before disconnecting
             for (Player player : getServer().getOnlinePlayers()) {
