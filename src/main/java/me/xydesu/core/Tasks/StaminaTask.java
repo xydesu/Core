@@ -15,12 +15,18 @@ public class StaminaTask extends BukkitRunnable {
             double currentStamina = customPlayer.getCurrentStamina();
             
             if (bukkitPlayer.isSprinting()) {
-                // Consume stamina
-                // Consume 0.5 stamina every 4 ticks (2.5 per second)
-                // With 20 base stamina, that's 8 seconds of sprinting.
-                // With vitality bonuses, it will be longer.
-                double consumption = 0.5; 
-                
+                // Non-linear stamina consumption: drain accelerates as stamina depletes.
+                // Base rate is 0.25 per 4 ticks. A quadratic curve on the depletion ratio
+                // keeps drain low while stamina is plentiful and ramps it up as the player
+                // tires, giving a more natural "fatigue" feel rather than a flat countdown.
+                // Formula: consumption = BASE * (1 + (1 - ratio)^2)
+                //   ratio=1.0 (full)  → 0.25 * 1.00 = 0.25
+                //   ratio=0.5 (half)  → 0.25 * 1.25 = 0.3125
+                //   ratio=0.0 (empty) → 0.25 * 2.00 = 0.50
+                final double BASE_CONSUMPTION = 0.25;
+                double ratio = (maxStamina > 0) ? currentStamina / maxStamina : 0;
+                double consumption = BASE_CONSUMPTION * (1.0 + Math.pow(1.0 - ratio, 2.0));
+
                 currentStamina -= consumption;
                 if (currentStamina <= 0) {
                     currentStamina = 0;
