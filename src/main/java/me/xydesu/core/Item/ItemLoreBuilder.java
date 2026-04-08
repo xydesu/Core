@@ -236,6 +236,11 @@ public class ItemLoreBuilder {
             stats.add(mm.deserialize("<italic:false><gray>移動速度：<gold>"
                     + String.format(java.util.Locale.US, "%.1f", item.getMovementSpeed() * minMult) + "-"
                     + String.format(java.util.Locale.US, "%.1f", item.getMovementSpeed() * maxMult) + "%"));
+        if (item.getLifeSteal() != 0)
+            stats.add(mm.deserialize("<italic:false><gray>生命竊取：<gold>"
+                    + String.format(java.util.Locale.US, "%.1f", item.getLifeSteal() * minMult) + "-"
+                    + String.format(java.util.Locale.US, "%.1f", item.getLifeSteal() * maxMult) + "%"));
+        // Range is a fixed stat with no variance
         if (item.getRange() != 0)
             stats.add(mm.deserialize(
                     "<italic:false><gray>攻擊距離：<gold>+" + String.format(java.util.Locale.US, "%.1f", item.getRange())));
