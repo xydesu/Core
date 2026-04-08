@@ -4,8 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 /**
- * Defines a rectangular spawn region where a specific {@link CustomMob} type
- * will be automatically spawned by {@link me.xydesu.core.Tasks.MobSpawnTask}.
+ * Defines a cylindrical spawn region where a specific {@link CustomMob} type
+ * will be automatically spawned by {@link me.xydesu.core.Tasks.CustomMobTask}.
  */
 public class Region {
 

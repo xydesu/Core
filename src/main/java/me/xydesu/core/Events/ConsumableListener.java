@@ -27,7 +27,7 @@ public class ConsumableListener implements Listener {
 
         for (Item registered : Item.getRegisteredItems()) {
             if (!registered.getID().equals(id)) continue;
-            if (registered.getToolType() != ToolType.CONSUMABLE) break;
+            if (registered.getToolType() != ToolType.CONSUMABLE) continue;
             registered.onInteract(event);
             break;
         }

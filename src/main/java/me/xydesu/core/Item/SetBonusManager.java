@@ -24,12 +24,14 @@ public class SetBonusManager {
         public final double maxMana;
         public final double manaRegen;
         public final String displayName;
+        /** Human-readable name of the set (without piece count), e.g. "測試套裝". */
+        public final String setName;
 
         public SetBonus(int requiredPieces, double strength, double defense,
                 double critChance, double critDamage,
                 double maxHealth, double healthRegen,
                 double maxMana, double manaRegen,
-                String displayName) {
+                String setName, String displayName) {
             this.requiredPieces = requiredPieces;
             this.strength = strength;
             this.defense = defense;
@@ -40,6 +42,7 @@ public class SetBonusManager {
             this.maxMana = maxMana;
             this.manaRegen = manaRegen;
             this.displayName = displayName;
+            this.setName = setName;
         }
     }
 
@@ -49,8 +52,8 @@ public class SetBonusManager {
     static {
         // Test Set: 4 pieces total (Helmet, Chestplate, Leggings, Boots)
         List<SetBonus> testSetBonuses = new ArrayList<>();
-        testSetBonuses.add(new SetBonus(2, 5, 5, 0, 0, 0, 0, 0, 0, "測試套裝 (2件)"));
-        testSetBonuses.add(new SetBonus(4, 10, 10, 0.05, 0.1, 50, 1, 0, 0, "測試套裝 (4件)"));
+        testSetBonuses.add(new SetBonus(2, 5, 5, 0, 0, 0, 0, 0, 0, "測試套裝", "測試套裝 (2件)"));
+        testSetBonuses.add(new SetBonus(4, 10, 10, 0.05, 0.1, 50, 1, 0, 0, "測試套裝", "測試套裝 (4件)"));
         sets.put("TEST_SET", testSetBonuses);
     }
 
@@ -84,8 +87,7 @@ public class SetBonusManager {
     public static String getSetDisplayName(String setId) {
         List<SetBonus> bonuses = sets.get(setId);
         if (bonuses != null && !bonuses.isEmpty()) {
-            // Use the highest tier name as the set display name
-            return bonuses.get(bonuses.size() - 1).displayName.replaceAll(" \\(\\d+件\\)$", "");
+            return bonuses.get(bonuses.size() - 1).setName;
         }
         return setId;
     }

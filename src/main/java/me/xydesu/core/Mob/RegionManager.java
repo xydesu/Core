@@ -8,7 +8,7 @@ import java.util.List;
  * Central registry for all {@link Region} spawn zones.
  *
  * <p>Add entries to the static initialiser block to define regions.
- * The {@link me.xydesu.core.Tasks.MobSpawnTask} reads this registry
+ * The {@link me.xydesu.core.Tasks.CustomMobTask} reads this registry
  * to know where and what to spawn.
  */
 public class RegionManager {

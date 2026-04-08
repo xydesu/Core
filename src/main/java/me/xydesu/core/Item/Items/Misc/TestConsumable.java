@@ -61,7 +61,11 @@ public class TestConsumable extends Item {
 
         // Consume one item
         org.bukkit.inventory.ItemStack hand = player.getInventory().getItemInMainHand();
-        hand.setAmount(hand.getAmount() - 1);
+        if (hand.getAmount() <= 1) {
+            player.getInventory().setItemInMainHand(null);
+        } else {
+            hand.setAmount(hand.getAmount() - 1);
+        }
 
         player.sendMessage("§a你使用了 §e測試消耗品§a！速度 II 與生命提升 I 持續 30 秒。");
         player.playSound(player.getLocation(), Sound.ENTITY_GENERIC_EAT, 1f, 1f);
