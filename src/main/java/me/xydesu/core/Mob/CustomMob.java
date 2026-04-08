@@ -217,6 +217,10 @@ public abstract class CustomMob {
         return line.remove(entity);
     }
 
+    public static Map<LivingEntity, TextDisplay> getNameDisplays() {
+        return Collections.unmodifiableMap(line);
+    }
+
     // Helper for manual setup (e.g. from command with custom args)
     public static void setCustomMob(LivingEntity entity, boolean isCustom) {
         PDC.set(entity, Keys.CUSTOM_MOB, PersistentDataType.BOOLEAN, isCustom);
